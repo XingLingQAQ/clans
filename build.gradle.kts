@@ -8,6 +8,12 @@ plugins {
     id("clans.dynmap-conventions")
     id("clans.publish-conventions")
     id("com.github.johnrengelman.shadow")
+}    
+
+repositories {
+    mavenLocal()
+    maven { url "https://jitpack.io" }  
+    maven { url "https://repo.minebench.de/" }  
 }
 
 dependencies {
