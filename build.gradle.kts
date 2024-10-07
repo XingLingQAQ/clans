@@ -12,7 +12,6 @@ plugins {
 
 repositories {
     mavenLocal()
-    maven { url "https://jitpack.io" }  
     maven { url "https://repo.minebench.de/" }  
 }
 
