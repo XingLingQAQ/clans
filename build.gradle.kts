@@ -12,7 +12,7 @@ plugins {
 
 repositories {
     mavenLocal()
-    maven { url "https://repo.minebench.de/" }  
+    maven { url=uri(https://repo.minebench.de/) }  
 }
 
 dependencies {
