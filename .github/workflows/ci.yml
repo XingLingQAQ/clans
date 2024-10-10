@@ -11,7 +11,17 @@ on:
     branches: [ "main" ]
 jobs:
   build:
-    name: "Build Clans with `gradle shadowJar`"
-    uses: the-h-team/workflows/.github/workflows/gradle.yml@main
-    with:
-      gradle_args: shadowJar
+    - name: "Build Clans with `gradle shadowJar`"
+      uses: the-h-team/workflows/.github/workflows/gradle.yml@main
+      with:
+        gradle_args: shadowJar
+# 上传文件并发布 Release
+    - name: upload
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "clans"
+          prerelease: false
+          title: "Clans"
+          files: |
+             build/libs/*.jar
