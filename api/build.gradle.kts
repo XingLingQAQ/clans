@@ -11,5 +11,5 @@ setMavenName("Clans API")
 dependencies {
     // api configuration = exposed to consumers
     api("com.github.the-h-team.Labyrinth:labyrinth-loci:${findProperty("labyrinthVersion")}")
-    implementation("com.github.the-h-team.Panther:panther-common:${findProperty("pantherVersion")}")
+    implementation("com.github.the-h-team.Panther:panther-common:1.0.2")
 }
