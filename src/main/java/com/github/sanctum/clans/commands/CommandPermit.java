@@ -43,7 +43,7 @@ public class CommandPermit extends ClanSubCommand {
 				if (Clearance.MANAGE_PERMS.test(associate)) {
 					lib.sendMessage(p, lib.commandPermit());
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());
@@ -91,7 +91,7 @@ public class CommandPermit extends ClanSubCommand {
 					}
 
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());

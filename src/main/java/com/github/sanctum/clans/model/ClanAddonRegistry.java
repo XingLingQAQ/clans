@@ -34,8 +34,12 @@ public final class ClanAddonRegistry {
 	static ClanAddonRegistry instance;
 	final Set<Clan.Addon> ADDONS = new HashSet<>();
 
-	ClanAddonRegistry() {
+	ClanAddonRegistry() {}
 
+	void sendBorder(ClanAddonLogger l) {
+		if (LabyrinthProvider.getInstance().isLegacy()) {
+			l.info("==================================================================================");
+		} else l.info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 	}
 
 	public int bump(@NotNull Clan.Addon addon) {
@@ -139,21 +143,21 @@ public final class ClanAddonRegistry {
 									addon.getContext().setActive(true);
 									addon.onEnable();
 									l.info(" ");
-									l.info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+									sendBorder(l);
 									l.info("- Addon: " + addon.getName());
 									l.info("- Description: " + addon.getDescription());
 									l.info("- Persistent: (" + addon.isPersistent() + ")");
-									l.info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+									sendBorder(l);
 									l.info(" ");
-									l.info("- Listeners: (" + addon.getContext().getListeners().length + ")");
+									l.info("  - Listeners: (" + addon.getContext().getListeners().length + ")");
 									for (Listener addition : addon.getContext().getListeners()) {
 										String format = addition.getClass().getSimpleName().isEmpty() ? "{REDACTED}" : addition.getClass().getSimpleName();
 										boolean registered = HandlerList.getRegisteredListeners(PRO).stream().anyMatch(r -> r.getListener().equals(addition));
 										if (!registered) {
-											l.info("- [" + addon.getName() + "] (+1) Listener " + format + " loaded");
+											l.info("    - [" + addon.getName() + "] (+1) Listener " + format + " loaded");
 											VentMap.getInstance().subscribe((Vent.Host) PRO, addition);
 										} else {
-											l.info("- [" + addon.getName() + "] (-1) Listener " + format + " already loaded. Skipping.");
+											l.info("    - [" + addon.getName() + "] (-1) Listener " + format + " already loaded. Skipping.");
 										}
 									}
 								} else {
@@ -163,9 +167,9 @@ public final class ClanAddonRegistry {
 									l.info("- Persistent: (" + addon.isPersistent() + ")");
 									addon.remove();
 									l.info(" ");
-									l.info("- Listeners: (" + addon.getContext().getListeners().length + ")");
+									l.info("  - Listeners: (" + addon.getContext().getListeners().length + ")");
 									for (Listener addition : addon.getContext().getListeners()) {
-										l.info("- [" + addition.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
+										l.info("    - [" + addition.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
 									}
 								}
 							} else {
@@ -199,21 +203,21 @@ public final class ClanAddonRegistry {
 			addon.getContext().setActive(true);
 			addon.onEnable();
 			l.info(" ");
-			l.info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+			sendBorder(l);
 			l.info("- Addon: " + addon.getName());
 			l.info("- Description: " + addon.getDescription());
 			l.info("- Persistent: (" + addon.isPersistent() + ")");
-			l.info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+			sendBorder(l);
 			l.info(" ");
-			l.info("- Listeners: (" + addon.getContext().getListeners().length + ")");
+			l.info("  - Listeners: (" + addon.getContext().getListeners().length + ")");
 			for (Listener addition : addon.getContext().getListeners()) {
 				String format = addition.getClass().getSimpleName().isEmpty() ? "{REDACTED}" : addition.getClass().getSimpleName();
 				boolean registered = HandlerList.getRegisteredListeners(PRO).stream().anyMatch(r -> r.getListener().equals(addition));
 				if (!registered) {
-					l.info("- [" + addon.getName() + "] (+1) Listener " + format + " loaded");
+					l.info("    - [" + addon.getName() + "] (+1) Listener " + format + " loaded");
 					VentMap.getInstance().subscribe((Vent.Host) PRO, addition);
 				} else {
-					l.info("- [" + addon.getName() + "] (-1) Listener " + format + " already loaded. Skipping.");
+					l.info("    - [" + addon.getName() + "] (-1) Listener " + format + " already loaded. Skipping.");
 				}
 			}
 		} else {
@@ -223,9 +227,9 @@ public final class ClanAddonRegistry {
 			l.info("- Persistent: (" + addon.isPersistent() + ")");
 			addon.remove();
 			l.info(" ");
-			l.info("- Listeners: (" + addon.getContext().getListeners().length + ")");
+			l.info("  - Listeners: (" + addon.getContext().getListeners().length + ")");
 			for (Listener addition : addon.getContext().getListeners()) {
-				l.info("- [" + addition.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
+				l.info("    - [" + addition.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
 			}
 		}
 		return new ClanAddonLoadResult() {
@@ -320,8 +324,9 @@ public final class ClanAddonRegistry {
 				}
 			};
 		} catch (NoClassDefFoundError e) {
-			LabyrinthProvider.getInstance().getLogger().warning("- Your Labyrinth core is out-dated. Additions for addon " + addon.getName() + " will not work.");
+			LabyrinthProvider.getInstance().getLogger().warning("- There was a problem loading an addon. Check no dependencies are missing/out of date. Additions for addon " + addon.getName() + " will not work.");
 			LabyrinthProvider.getInstance().getLogger().warning("- It's possible this has no effect to you as of this moment so you may be safe to ignore this message.");
+			LabyrinthProvider.getInstance().getLogger().warning("- Reason: " + e.getMessage());
 		}
 		return new ClanAddonLoadResult() {
 			@Override

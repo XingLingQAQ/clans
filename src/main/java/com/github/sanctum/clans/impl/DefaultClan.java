@@ -8,6 +8,7 @@ import com.github.sanctum.clans.impl.entity.EntityAssociate;
 import com.github.sanctum.clans.impl.entity.PlayerAssociate;
 import com.github.sanctum.clans.model.*;
 import com.github.sanctum.clans.util.BukkitColor;
+import com.github.sanctum.clans.util.ClanLevelTree;
 import com.github.sanctum.clans.util.ClanRelationList;
 import com.github.sanctum.clans.util.InvalidAssociateTypeException;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
@@ -21,7 +22,6 @@ import com.github.sanctum.labyrinth.library.NamespacedKey;
 import com.github.sanctum.labyrinth.library.StringUtils;
 import com.github.sanctum.labyrinth.library.Teleport;
 import com.github.sanctum.labyrinth.task.TaskScheduler;
-import com.github.sanctum.panther.annotation.Removal;
 import com.github.sanctum.panther.container.PantherEntryMap;
 import com.github.sanctum.panther.container.PantherList;
 import com.github.sanctum.panther.container.PantherMap;
@@ -29,6 +29,7 @@ import com.github.sanctum.panther.file.Configurable;
 import com.github.sanctum.panther.file.MemorySpace;
 import com.github.sanctum.panther.file.Node;
 import com.github.sanctum.panther.util.HUID;
+import com.github.sanctum.panther.util.OrdinalProcedure;
 import com.github.sanctum.panther.util.RandomID;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -37,6 +38,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,7 +97,7 @@ public final class DefaultClan implements Clan, PersistentEntity {
     public DefaultClan(RankRegistry registry, String clanID, boolean server) {
         this.clanID = clanID;
         this.positionRegistry = registry;
-        this.dataFile = ClansAPI.getInstance().getFileList().get(clanID, "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).TYPE).getRoot();
+        this.dataFile = ClansAPI.getInstance().getFileList().get(clanID, "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).DATATYPE).getRoot();
         this.info_board = ClansAPI.getDataInstance().getMessages().getRoot().getStringList("info-simple-other");
         this.relationObject = new Relation() {
 
@@ -415,7 +417,6 @@ public final class DefaultClan implements Clan, PersistentEntity {
         } else {
             palette.setStart(BukkitColor.random().toCode());
         }
-        removeValue("clearance");
         try {
             ClearanceOverride.ClearanceData clog = getValue(ClearanceOverride.ClearanceData.class, "permissions");
             if (clog == null) {
@@ -461,7 +462,6 @@ public final class DefaultClan implements Clan, PersistentEntity {
                     Rank priority = positionRegistry.getRank(rank);
                     List<String> members = new ArrayList<>(dataFile.getStringList("members." + rank));
                     if (priority != null) {
-                        ranksCorrected.put(rank, members);
                         for (String mem : members) {
                             try {
                                 UUID id = UUID.fromString(mem);
@@ -469,42 +469,46 @@ public final class DefaultClan implements Clan, PersistentEntity {
                                     Associate associate = new PlayerAssociate(id, priority, this);
                                     associates.add(associate);
                                 } catch (InvalidAssociateTypeException e) {
-                                    ClansAPI.getInstance().getPlugin().getLogger().warning("A UUID with no playerdata in clan " + name + " was found " + '"' + mem + '"');
+                                    ClansAPI.getInstance().getPlugin().getLogger().severe("- A UUID with no playerdata in clan " + name + " was found " + '"' + mem + '"');
                                 }
                             } catch (IllegalArgumentException e) {
-                                ClansAPI.getInstance().getPlugin().getLogger().warning('"' + mem + '"' + " is not a valid UUID. Please remove it from the " + '"' + name + '"' + " data file");
+                                ClansAPI.getInstance().getPlugin().getLogger().severe("- " + '"' + mem + '"' + " is not a valid UUID. Please remove it from the " + '"' + name + '"' + " data file");
                             }
                         }
                     } else {
-                        ClansAPI.getInstance().getPlugin().getLogger().warning("Non-existing rank " + '"' + rank + '"' + " was found with (" + dataFile.getStringList("members." + rank).size() + ") members in clan file " + '"' + clanID + '"' + " Goal: Attempting to clean-up");
+                        ClansAPI.getInstance().getPlugin().getLogger().severe("Non-existing rank " + '"' + rank + '"' + " was found with (" + dataFile.getStringList("members." + rank).size() + ") members in clan file " + '"' + clanID + '"' + " Goal: Attempting to clean-up");
                         // introduce config variable for replacement word, help people fix there data files!
                         // look for old-name variable to find rank.
-                        String aName = "INTERNALCLANSPLACEHOLDER123";
+                        String actualRankName = "INTERNALCLANSPLACEHOLDER123";
                         FileManager ranksFile = ClansAPI.getInstance().getFileList().get("Ranks", "Configuration");
                         for (String tag : ranksFile.getRoot().getKeys(false)) {
                             String currentName = ranksFile.getRoot().getNode(tag + ".name").toPrimitive().getString();
                             String oldName = ranksFile.getRoot().getNode(tag + ".old-name").toPrimitive().getString();
                             if (rank.equals(oldName)) {
-                                aName = currentName;
-                                break;
+                                boolean success = (boolean) OrdinalProcedure.select(clearanceOverride, 2, rank).getElement();
+                                if (success) {
+                                    ClansAPI.getInstance().getPlugin().getLogger().warning("Missing rank '" + rank + "' was cleaned up from clan '" + clanID + "'");
+                                    actualRankName = currentName;
+                                    break;
+                                } else throw new IllegalStateException("Something went wrong went attempting to remove a corrupt rank from file.");
                             }
                         }
-                        Rank actual = positionRegistry.getRank(aName);
-                        if (actual == null) {
-                            ClansAPI.getInstance().getPlugin().getLogger().severe("Non-existing rank " + '"' + rank + '"' + " was found with (" + dataFile.getStringList("members." + rank).size() + ") members in clan file " + '"' + clanID + '"' + " Goal: Reset associates in tier.");
-                            ClansAPI.getInstance().getPlugin().getLogger().severe("Setting associates to member to reduce risk of corruption.");
-                            //remove associates from list and into members remove rank from list
-                            actual = positionRegistry.getRank(0);
+                        Rank actualRank = positionRegistry.getRank(actualRankName);
+                        if (actualRank == null) {
+                            ClansAPI.getInstance().getPlugin().getLogger().severe("- Rank '" + actualRankName + "' has no allocation within memory. Goal: Reset associates in tier.");
+                            ClansAPI.getInstance().getPlugin().getLogger().severe("- Associates in this tier will be moved to member to reduce risk of corruption.");
+                            //remove associates from list and into members, remove rank from list
+                            actualRank = positionRegistry.getRank(0);
                         }
-                        if (ranksCorrected.containsKey(actual.getName())) {
-                            List<String> list = ranksCorrected.get(actual.getName());
+                        if (ranksCorrected.containsKey(actualRank.getName())) {
+                            List<String> list = ranksCorrected.get(actualRank.getName());
                             for (String m : list) {
                                 if (!list.contains(m)) {
-                                    TaskScheduler.of(() -> list.add(m)).schedule();
+                                    list.add(m);
                                 }
                             }
                         } else {
-                            ranksCorrected.put(actual.getName(), members);
+                            ranksCorrected.put(actualRank.getName(), members);
                         }
                     }
                 }
@@ -522,12 +526,13 @@ public final class DefaultClan implements Clan, PersistentEntity {
                                     Associate associate = new PlayerAssociate(id, priority, this);
                                     associates.add(associate);
                                 } catch (InvalidAssociateTypeException e) {
-                                    ClansAPI.getInstance().getPlugin().getLogger().warning("A UUID with no playerdata in clan " + name + " was found " + '"' + mem + '"');
+                                    ClansAPI.getInstance().getPlugin().getLogger().severe("A UUID with no playerdata in clan " + name + " was found " + '"' + mem + '"');
                                 }
                             } catch (IllegalArgumentException e) {
-                                ClansAPI.getInstance().getPlugin().getLogger().warning('"' + mem + '"' + " is not a valid UUID. Please remove it from the " + '"' + name + '"' + " data file");
+                                ClansAPI.getInstance().getPlugin().getLogger().severe('"' + mem + '"' + " is not a valid UUID. Please remove it from the " + '"' + name + '"' + " data file");
                             }
                         }
+                        ClansAPI.getInstance().getPlugin().getLogger().warning("A total of (" + members.size() + ")" + " members were fixed for rank '" + rank + "'");
                     }
                 }
             }
@@ -565,7 +570,7 @@ public final class DefaultClan implements Clan, PersistentEntity {
     }
 
     @Deprecated
-    @Removal(because = "temporary way to convert ranking system")
+    @ApiStatus.ScheduledForRemoval()
     void fixOldRankNames(Configurable c) {
         if (c.getNode("members").getNode("HIGHEST").toPrimitive().isStringList()) {
             // update to new format then read below.
@@ -893,7 +898,15 @@ public final class DefaultClan implements Clan, PersistentEntity {
         } else {
             bonus += getWins() * 39.8;
         }
-        return Math.min(result + bonus, (double) ClanGameRule.of(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getLocalPrintKey())).get(ClanGameRule.MAX_POWER));
+        return Math.min(result + bonus, (double) ClanGameAttributes.of(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getConfigKey())).get(ClanGameAttributes.MAX_POWER));
+    }
+
+    @Override
+    public int getLevel() {
+        ClanLevelTree.Range range = ClanLevelTree.getInstance().getRange(this);
+        if (range == null) throw new ClanError("Unable to find a suitable level range for power level '" + getPower() + "'");
+        // we need to alawys get an compare levels, make a variable above called level and compare it to initiate the level up when this method is called.
+        return range.getLevel();
     }
 
     @Override
@@ -1024,10 +1037,10 @@ public final class DefaultClan implements Clan, PersistentEntity {
         String enemyList = getEnemies().collect().stream().map(Clan::getName).collect(Collectors.joining(", "));
         String requestList = getRelation().getAlliance().getRequests().stream().map(InvasiveEntity::getName).collect(Collectors.joining(", "));
         PantherList<Object> list = new PantherList<>(Arrays.asList(getName(), getDescription(), ACTION.format(getPower()), getPalette().toString(getName()), getClaims().length, getClaimLimit(), allyList, enemyList, requestList
-                , getPalette().toString(), ACTION.format(totalKD), getOwner().getName(), status, base, mode, mods.size(), admins.size(), allies.size(), enemies.size(), color, getPassword()));
+                , getPalette().toString(), ACTION.format(totalKD), getOwner().getName(), status, base, mode, mods.size(), admins.size(), allies.size(), enemies.size(), color, (getPassword() == null ? "N/A" : getPassword())));
         positionRegistry.getRanks().forEach(p -> {
             List<String> members = getMembers().stream().filter(m -> m.getRank().getLevel() == p.getLevel()).map(Associate::getName).collect(Collectors.toList());
-            String memberList = members.stream().collect(Collectors.joining(", "));
+            String memberList = String.join(", ", members);
             list.add(memberList);
             list.add(members.size());
         }); // run through and add each configured rank and size
@@ -1286,7 +1299,7 @@ public final class DefaultClan implements Clan, PersistentEntity {
     }
 
     public List<String> getLogo() {
-        return DefaultClan.this.getValue("logo");
+        return DefaultClan.this.getValue(List.class,"logo");
     }
 
     @Override
@@ -1356,7 +1369,7 @@ public final class DefaultClan implements Clan, PersistentEntity {
 
     @Override
     public boolean has(@NotNull UUID uuid) {
-        return getMember(associate -> associate.getUniqueId().equals(uuid)) != null;
+        return getMember(uuid) != null;
     }
 
     @Override

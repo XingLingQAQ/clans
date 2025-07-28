@@ -50,7 +50,7 @@ public class CommandClaim extends ClanSubCommand {
 						}
 						Claim.ACTION.claim(p).run();
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 						return true;
 					}
 				} else {
@@ -79,7 +79,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&cWe have no custom enter title setup.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -96,7 +96,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&cWe have no custom enter sub-title setup.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -113,7 +113,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&cWe have no custom leave title setup.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -130,7 +130,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&cWe have no custom leave sub-title setup.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -142,7 +142,7 @@ public class CommandClaim extends ClanSubCommand {
 					if (Clearance.MANAGE_LAND.test(associate)) {
 						GUI.CLAIM_LIST.get(associate.getClan()).open(p);
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -154,7 +154,7 @@ public class CommandClaim extends ClanSubCommand {
 				if (Claim.ACTION.isAllowed().deploy()) {
 					if (associate != null) {
 						if (!Clearance.MANAGE_LAND.test(associate)) {
-							lib.sendMessage(p, lib.noClearance());
+							lib.sendMessage(p, lib.notEnoughClearance());
 							return true;
 						}
 						Claim test = ClansAPI.getInstance().getClaimManager().getClaim(p.getLocation());
@@ -192,7 +192,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&aTitle updated.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -210,7 +210,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&aSub-Title updated.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -228,7 +228,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&aTitle updated.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -246,7 +246,7 @@ public class CommandClaim extends ClanSubCommand {
 							lib.sendMessage(p, "&aSub-Title updated.");
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -265,7 +265,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("claim_title", args[1] + " " + args[2], false);
 					lib.sendMessage(p, "&aTitle updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 				return true;
 			}
@@ -274,7 +274,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("claim_sub_title", args[1] + " " + args[2], false);
 					lib.sendMessage(p, "&aTitle updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 				return true;
 			}
@@ -283,7 +283,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("leave_claim_title", args[1] + " " + args[2], false);
 					lib.sendMessage(p, "&aTitle updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 				return true;
 			}
@@ -292,7 +292,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("leave_claim_sub_title", args[1] + " " + args[2], false);
 					lib.sendMessage(p, "&aTitle updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 				return true;
 			}
@@ -315,7 +315,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("claim_title", result, false);
 					lib.sendMessage(p, "&aEnter title updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());
@@ -333,7 +333,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("claim_sub_title", result, false);
 					lib.sendMessage(p, "&aEnter sub-title updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());
@@ -351,7 +351,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("leave_claim_title", result, false);
 					lib.sendMessage(p, "&aLeave title updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());
@@ -369,7 +369,7 @@ public class CommandClaim extends ClanSubCommand {
 					associate.getClan().setValue("leave_claim_sub_title", result, false);
 					lib.sendMessage(p, "&aLeave sub-title updated.");
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());

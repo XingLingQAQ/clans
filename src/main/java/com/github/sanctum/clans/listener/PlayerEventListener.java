@@ -22,6 +22,7 @@ import com.github.sanctum.clans.event.player.PlayerShootPlayerEvent;
 import com.github.sanctum.clans.event.arena.ArenaActiveEvent;
 import com.github.sanctum.clans.event.arena.ArenaWonEvent;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
+import com.github.sanctum.labyrinth.api.LegacyCheckService;
 import com.github.sanctum.labyrinth.api.Service;
 import com.github.sanctum.labyrinth.data.EconomyProvision;
 import com.github.sanctum.labyrinth.data.container.CollectionTask;
@@ -268,6 +269,7 @@ public class PlayerEventListener implements Listener {
 			}
 		}
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			if (LegacyCheckService.VERSION.contains("1_8")) return;
 			if (e.getPlayer().getInventory().getItemInMainHand().getType() == Material.END_CRYSTAL) {
 				Clan.Associate t = ClansAPI.getInstance().getAssociate(e.getPlayer()).orElse(null);
 				if (t != null) {
@@ -745,7 +747,7 @@ public class PlayerEventListener implements Listener {
 			Arena w = ClansAPI.getInstance().getArenaManager().get(a);
 			if (w != null) {
 				if (w.isRunning()) {
-					for (String c : LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getLocalPrintKey()).getStringList("blocked_commands_war")) {
+					for (String c : LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getConfigKey()).getStringList("blocked_commands_war")) {
 						if (Arrays.equals(c.split(" "), e.getMessage().split(" "))) {
 							Clan.ACTION.sendMessage(e.getPlayer(), "&cYou cannot do this while in a match! Use &6/c surrender &ror &6truce &cto call a vote.");
 							e.setCancelled(true);

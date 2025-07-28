@@ -7,6 +7,7 @@ import com.github.sanctum.labyrinth.gui.unity.impl.InventoryElement;
 import com.github.sanctum.labyrinth.gui.unity.impl.MenuType;
 import com.github.sanctum.labyrinth.library.StringUtils;
 import com.github.sanctum.panther.annotation.Note;
+import com.github.sanctum.panther.util.EasyTypeAdapter;
 import com.github.sanctum.panther.util.TypeAdapter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ClanGameRule {
+public abstract class ClanGameAttributes {
 
 	public static final String BLOCKED_WAR_COMMANDS = "blocked_commands_war";
 	public static final String WAR_START_TIME = "war_start_time";
@@ -29,36 +30,36 @@ public abstract class ClanGameRule {
 
 	private final FingerPrint print;
 
-	protected ClanGameRule(FingerPrint print) {
+	protected ClanGameAttributes(FingerPrint print) {
 		this.print = print;
 	}
 
-	public static ClanGameRule of(@NotNull FingerPrint print) {
-		return InoperableSharedMemory.SCANNER_MAP.computeIfAbsent(print, print1 -> new ClanGameRule(print1) {
+	public static ClanGameAttributes of(@NotNull FingerPrint print) {
+		return InoperableSharedMemory.GAME_ATTRIBUTE.computeIfAbsent(print, print1 -> new ClanGameAttributes(print1) {
 		});
 	}
 
 	@Note("Local only game rules!")
-	public static ClanGameRule[] getAll() {
-		if (InoperableSharedMemory.SCANNER_MAP.isEmpty()) {
-			LabyrinthProvider.getInstance().getLocalPrintManager().getPrints(ClansAPI.getInstance().getPlugin()).forEach(ClanGameRule::of);
+	public static ClanGameAttributes[] getAll() {
+		if (InoperableSharedMemory.GAME_ATTRIBUTE.isEmpty()) {
+			LabyrinthProvider.getInstance().getLocalPrintManager().getPrints(ClansAPI.getInstance().getPlugin()).forEach(ClanGameAttributes::of);
 		}
-		return InoperableSharedMemory.SCANNER_MAP.entries().stream().filter(entry -> entry.getKey().getKey().equals(ClansAPI.getInstance().getLocalPrintKey())).map(Map.Entry::getValue).toArray(ClanGameRule[]::new);
+		return InoperableSharedMemory.GAME_ATTRIBUTE.entries().stream().filter(entry -> entry.getKey().getKey().equals(ClansAPI.getInstance().getConfigKey())).map(Map.Entry::getValue).toArray(ClanGameAttributes[]::new);
 	}
 
-	public void set(@MagicConstant(valuesFromClass = ClanGameRule.class) String key, Object o) {
+	public void set(@MagicConstant(valuesFromClass = ClanGameAttributes.class) String key, Object o) {
 		ClansAPI.getDataInstance().getResetTable().set(key, o);
 	}
 
-	public Object get(@MagicConstant(valuesFromClass = ClanGameRule.class) String key) {
+	public Object get(@MagicConstant(valuesFromClass = ClanGameAttributes.class) String key) {
 		return print.get(key);
 	}
 
-	public void reload(@MagicConstant(valuesFromClass = ClanGameRule.class) String key) {
+	public void reload(@MagicConstant(valuesFromClass = ClanGameAttributes.class) String key) {
 		print.reload(key).deploy();
 	}
 
-	public InventoryElement.Printable edit(@NotNull Modification modification, @MagicConstant(valuesFromClass = ClanGameRule.class) String key) {
+	public InventoryElement.Printable edit(@NotNull Modification modification, @MagicConstant(valuesFromClass = ClanGameAttributes.class) String key) {
 		Object o = print.get(key);
 		if (o instanceof List) {
 			switch (modification) {
@@ -101,7 +102,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<List<String>> flag = TypeAdapter.get();
+									TypeAdapter<List<String>> flag = new EasyTypeAdapter<List<String>>() {};
 									List<String> list = new ArrayList<>(flag.cast(o));
 									list.add(c.getParent().getName());
 									ClansAPI.getDataInstance().getResetTable().set(key, list);
@@ -125,7 +126,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<List<String>> flag = TypeAdapter.get();
+									TypeAdapter<List<String>> flag = new EasyTypeAdapter<List<String>>() {};
 									List<String> list = new ArrayList<>(flag.cast(o));
 									list.remove(c.getParent().getName());
 									ClansAPI.getDataInstance().getResetTable().set(key, list);
@@ -201,7 +202,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<Double> flag = TypeAdapter.get();
+									TypeAdapter<Double> flag = new EasyTypeAdapter<Double>() {};
 									double i = flag.cast(o);
 									if (!StringUtils.use(c.getParent().getName()).isDouble()) return;
 									double test = Double.parseDouble(c.getParent().getName());
@@ -225,7 +226,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<Double> flag = TypeAdapter.get();
+									TypeAdapter<Double> flag = new EasyTypeAdapter<Double>() {};
 									double i = flag.cast(o);
 									if (!StringUtils.use(c.getParent().getName()).isDouble()) return;
 									double test = Double.parseDouble(c.getParent().getName());
@@ -278,7 +279,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<Integer> flag = TypeAdapter.get();
+									TypeAdapter<Integer> flag = new EasyTypeAdapter<Integer>() {};
 									int i = flag.cast(o);
 									if (!StringUtils.use(c.getParent().getName()).isInt()) return;
 									int test = Integer.parseInt(c.getParent().getName());
@@ -302,7 +303,7 @@ public abstract class ClanGameRule {
 								c.setCancelled(true);
 								c.setHotbarAllowed(false);
 								if (c.getSlot() == 2) {
-									TypeAdapter<Integer> flag = TypeAdapter.get();
+									TypeAdapter<Integer> flag = new EasyTypeAdapter<Integer>() {};
 									int i = flag.cast(o);
 									if (!StringUtils.use(c.getParent().getName()).isInt()) return;
 									int test = Integer.parseInt(c.getParent().getName());

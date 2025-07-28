@@ -2,9 +2,8 @@ package com.github.sanctum.clans.impl;
 
 import com.github.sanctum.clans.model.BanksAPI;
 import com.github.sanctum.clans.model.Clan;
-import com.github.sanctum.clans.model.ClanBankBackend;
 import com.github.sanctum.clans.model.ClansAPI;
-import com.github.sanctum.clans.model.backend.ClanFileBankBackend;
+import com.github.sanctum.clans.model.backend.ClanBankBackend;
 import com.github.sanctum.panther.util.HUID;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,7 +17,7 @@ import java.util.Map;
 public class DefaultBanksAPI implements BanksAPI {
     private final JavaPlugin providingPlugin = JavaPlugin.getProvidingPlugin(Clan.Bank.class);
     private final Map<HUID, DefaultClanBank> banks = new HashMap<>();
-    private ClanBankBackend backend = new ClanFileBankBackend();
+    private com.github.sanctum.clans.model.ClanBankBackend backend = new ClanBankBackend();
 
     @Override
     public Clan.Bank getBank(Clan clan) {
@@ -67,11 +66,11 @@ public class DefaultBanksAPI implements BanksAPI {
         return LogLevel.values()[anInt];
     }
 
-    public ClanBankBackend getBackend() {
+    public com.github.sanctum.clans.model.ClanBankBackend getBackend() {
         return backend;
     }
 
-    public void setBackend(ClanBankBackend backend) {
+    public void setBackend(com.github.sanctum.clans.model.ClanBankBackend backend) {
         this.backend = backend;
     }
 

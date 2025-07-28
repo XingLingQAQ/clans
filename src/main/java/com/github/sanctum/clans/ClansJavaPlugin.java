@@ -1,18 +1,15 @@
 package com.github.sanctum.clans;
 
 import com.github.sanctum.clans.model.ClanAddonRegistry;
+import com.github.sanctum.clans.model.addon.BountyAddon;
+import com.github.sanctum.clans.model.addon.DynmapAddon;
 import com.github.sanctum.clans.model.addon.worldedit.DefaultWorldEditAdapter;
 import com.github.sanctum.clans.model.addon.worldedit.WorldEditAdapter;
 import com.github.sanctum.clans.model.Claim;
 import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.clans.model.LogoGallery;
-import com.github.sanctum.clans.util.AsynchronousLoanableTask;
-import com.github.sanctum.clans.util.ClansUpdate;
-import com.github.sanctum.clans.util.FileTypeCalculator;
-import com.github.sanctum.clans.util.MessagePrefix;
-import com.github.sanctum.clans.util.Reservoir;
-import com.github.sanctum.clans.util.StartProcedure;
+import com.github.sanctum.clans.util.*;
 import com.github.sanctum.clans.impl.DefaultArena;
 import com.github.sanctum.clans.impl.DefaultClaimFlag;
 import com.github.sanctum.clans.impl.entity.EntityAssociate;
@@ -20,33 +17,40 @@ import com.github.sanctum.clans.listener.PlayerEventListener;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
 import com.github.sanctum.labyrinth.api.Service;
 import com.github.sanctum.labyrinth.api.TaskService;
+import com.github.sanctum.labyrinth.data.EconomyProvision;
 import com.github.sanctum.labyrinth.data.FileList;
 import com.github.sanctum.labyrinth.data.FileManager;
 import com.github.sanctum.labyrinth.data.container.KeyedServiceManager;
 import com.github.sanctum.labyrinth.data.container.PersistentContainer;
+import com.github.sanctum.labyrinth.event.EnableAfterEvent;
 import com.github.sanctum.labyrinth.formatting.FancyMessageChain;
 import com.github.sanctum.labyrinth.formatting.Message;
 import com.github.sanctum.labyrinth.library.NamespacedKey;
 import com.github.sanctum.labyrinth.library.StringUtils;
 import com.github.sanctum.panther.annotation.AnnotationDiscovery;
 import com.github.sanctum.panther.annotation.Ordinal;
+import com.github.sanctum.panther.event.Subscribe;
 import com.github.sanctum.panther.event.Vent;
+import com.github.sanctum.panther.event.VentMap;
 import com.github.sanctum.panther.file.Configurable;
 import com.github.sanctum.panther.file.Node;
 import com.github.sanctum.panther.paste.PasteManager;
 import com.github.sanctum.panther.paste.type.Hastebin;
 import com.github.sanctum.panther.paste.type.Pastebin;
+import com.github.sanctum.panther.placeholder.PlaceholderRegistration;
 import com.github.sanctum.panther.recursive.ServiceFactory;
 import com.github.sanctum.panther.util.OrdinalProcedure;
 import com.github.sanctum.panther.util.Task;
 import com.github.sanctum.skulls.CustomHead;
-import java.io.File;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -71,7 +75,7 @@ import org.jetbrains.annotations.NotNull;
 public class ClansJavaPlugin extends JavaPlugin implements ClansAPI, Vent.Host {
 
 	private NamespacedKey STATE;
-	public Configurable.Extension TYPE;
+	public Configurable.Extension DATATYPE;
 	private static ClansJavaPlugin PRO;
 	private static FileList origin;
 	private MessagePrefix prefix;
@@ -91,7 +95,6 @@ public class ClansJavaPlugin extends JavaPlugin implements ClansAPI, Vent.Host {
 	private UUID sessionId;
 
 	public void onLoad() {
-		fixDataFolder();
 		// register api on load, a change from before.
 		Bukkit.getServicesManager().register(ClansAPI.class, this, this, ServicePriority.Normal);
 	}
@@ -104,25 +107,34 @@ public class ClansJavaPlugin extends JavaPlugin implements ClansAPI, Vent.Host {
 		Configurable.registerClass(Claim.class);
 		ConfigurationSerialization.registerClass(Claim.class);
 		ConfigurationSerialization.registerClass(Clan.class);
+		VentMap.getInstance().subscribe(this, this);
 
 		getClaimManager().getFlagManager().register(DefaultClaimFlag.values());
 
 		OrdinalProcedure.process(new StartProcedure(this));
 	}
 
-	// TODO: Deleted after a few version as this wont be needed. it was only to mitigate tether bs.
-	void fixDataFolder() {
-		final File pluginsDir = new File(FileManager.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
-		final String name = getDescription().getName();
-		final File newDir = new File(pluginsDir.getParentFile().getPath(), name);
-		if (!newDir.exists()) {
-			// account for both folder names
-			for (String oldFolderName : new String[]{"Clans", "Tether"}) {
-				final File oldDir = new File(pluginsDir.getParentFile().getPath(), oldFolderName);
-				if (oldDir.renameTo(newDir)) {
-					getLogger().info("Renamed the old '" + oldFolderName + "' folder to '" + name + "' for you.");
-					break;
-				}
+	@Subscribe
+	public void onEnableAfter(EnableAfterEvent e) {
+		getLogger().info("- Checking for placeholders.");
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+			new PapiPlaceholders(this).register();
+			new PantherPlaceholders(this).register();
+		} else {
+			PlaceholderRegistration.getInstance().registerTranslation(new PantherPlaceholders(this));
+			getLogger().info("- NOTE: PlaceholderAPI was not found.");
+		}
+		getLogger().info("- Loaded clans unified placeholders.");
+		ClanAddonRegistry queue = ClanAddonRegistry.getInstance();
+		if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
+			for (String s : queue.register(DynmapAddon.class).read()) {
+				getLogger().info(s);
+			}
+		}
+		if (EconomyProvision.getInstance().isValid()) {
+			getLogger().info("- Economy found, loading bounty addon.");
+			for (String s : queue.register(BountyAddon.class).read()) {
+				getLogger().info(s);
 			}
 		}
 	}
@@ -225,11 +237,11 @@ public class ClansJavaPlugin extends JavaPlugin implements ClansAPI, Vent.Host {
 		});
 
 		FileManager heads = getFileList().get("heads", "Configuration/Data", Configurable.Type.JSON);
-		CustomHead.Manager.getHeads().stream().filter(h -> h.category().equals("Clans")).forEach(h -> {
+		SkullReferenceUtility.getHeads().stream().filter(h -> h.getCategory().equals("Clans")).forEach(h -> {
 			heads.write(t -> {
-				t.set(h.name() + ".name", h.name());
-				t.set(h.name() + ".custom", true);
-				t.set(h.name() + ".category", h.category());
+				t.set(h.getName() + ".name", h.getName());
+				t.set(h.getName() + ".custom", true);
+				t.set(h.getName() + ".category", h.getCategory());
 			});
 		});
 	}
@@ -366,7 +378,7 @@ public class ClansJavaPlugin extends JavaPlugin implements ClansAPI, Vent.Host {
 		sessionId = UUID.randomUUID();
 		dataManager = new DataManager();
 		gallery = new LogoGallery();
-		TYPE = new FileTypeCalculator(dataManager).getType();
+		DATATYPE = new FileTypeCalculator(dataManager).getType();
 		clanManager = new ClanManager(this);
 		claimManager = new ClaimManager();
 		shieldManager = new ShieldManager();

@@ -192,7 +192,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 								kingdom.setPeaceful(result);
 								sendMessage(p, "&aKingdom pvp mode set to &f" + result);
 							} else {
-								sendMessage(p, Clan.ACTION.noClearance());
+								sendMessage(p, Clan.ACTION.notEnoughClearance());
 							}
 						}
 					}
@@ -214,7 +214,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 					if (kindom != null) {
 
 						if (!Clearance.LEAVE_KINGDOM.test(associate)) {
-							Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+							Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 							return true;
 						}
 
@@ -357,7 +357,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 								kingdom.setCastle(p.getLocation());
 								sendMessage(p, "&aCastle location updated.");
 							} else {
-								sendMessage(p, Clan.ACTION.noClearance());
+								sendMessage(p, Clan.ACTION.notEnoughClearance());
 							}
 						}
 					}
@@ -388,7 +388,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 									sendMessage(p, "&cPlayer " + args[1] + " is not apart of our kingdom.");
 								}
 							} else {
-								sendMessage(p, Clan.ACTION.noClearance());
+								sendMessage(p, Clan.ACTION.notEnoughClearance());
 							}
 						} else {
 							if (Clearance.RESEAT_KINGDOM.test(associate)) {
@@ -400,7 +400,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 									sendMessage(p, "&cPlayer " + args[1] + " is not apart of our kingdom.");
 								}
 							} else {
-								sendMessage(p, Clan.ACTION.noClearance());
+								sendMessage(p, Clan.ACTION.notEnoughClearance());
 							}
 						}
 					}
@@ -434,7 +434,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 							k.getMembers().forEach(cl -> cl.broadcast("&2[&b" + k.getName() + "&2]&r " + c.getName() + " vows protection to the kingdom."));
 
 						} else {
-							Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+							Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 						}
 
 					}
@@ -464,7 +464,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 					if (k == null) {
 
 						if (Clearance.CREATE_KINGDOM.test(associate)) {
-							Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+							Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 							return true;
 						}
 
@@ -510,7 +510,7 @@ public class KingdomCommand extends ClanSubCommand implements Message.Factory {
 				if (associate != null) {
 
 					if (!Clearance.RENAME_KINGDOM.test(associate)) {
-						Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+						Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 						return true;
 					}
 

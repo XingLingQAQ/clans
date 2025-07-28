@@ -40,12 +40,12 @@ public class CommandPassword extends ClanSubCommand {
 			Clan clan = associate.getClan();
 			if (Clearance.MANAGE_PASSWORD.test(associate)) {
 				if (!isAlphaNumeric(args[0])) {
-					lib.sendMessage(p, lib.passwordInvalid());
+					lib.sendMessage(p, lib.invalidPasswordFormat());
 					return true;
 				}
 				clan.setPassword(args[0]);
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 				return true;
 			}
 			return true;

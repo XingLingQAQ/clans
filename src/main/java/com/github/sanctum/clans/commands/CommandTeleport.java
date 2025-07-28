@@ -39,6 +39,10 @@ public class CommandTeleport extends ClanSubCommand {
 				lib.sendMessage(p, lib.notInClan());
 				return true;
 			}
+			if (args[0].equalsIgnoreCase(p.getName())) {
+				lib.sendMessage(p, "&cInvalid target!");
+				return true;
+			}
 			Player search = Bukkit.getPlayer(args[0]);
 			if (search != null) {
 				Clan.Associate associate = ClansAPI.getInstance().getAssociate(search).orElse(null);
@@ -49,7 +53,7 @@ public class CommandTeleport extends ClanSubCommand {
 					}
 				}
 			} else {
-				lib.sendMessage(p, lib.playerUnknown(args[0]));
+				lib.sendMessage(p, lib.invalidPlayer(args[0]));
 			}
 			return true;
 		}

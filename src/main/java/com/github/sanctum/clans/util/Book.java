@@ -61,9 +61,9 @@ public class Book extends ItemStack {
 		for (int i = Math.min(offset, lines.length - 1); i < lines.length; ++i) {
 			int index = i + 1;
 			if (index >= lines.length) {
-				array[i] = StringUtils.use(lines[i] + "&f").translate();
+				array[i] = StringUtils.use(lines[i]).translate();
 			} else {
-				array[index] = StringUtils.use(lines[i] + "&f").translate();
+				array[index] = StringUtils.use(lines[i]).translate();
 			}
 		}
 		if (offset == 1) {
@@ -92,7 +92,7 @@ public class Book extends ItemStack {
 		if (lines >= 13) {
 			newPage(string.get());
 			this.lines = 0;
-			this.string = new FormattedString("").append(line).append("\n");
+			this.string = new FormattedString(line).append("\n");
 		} else {
 			this.string.append(line).append("\n");
 		}

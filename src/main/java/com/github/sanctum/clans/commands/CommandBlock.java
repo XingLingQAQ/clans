@@ -59,7 +59,7 @@ public class CommandBlock extends ClanSubCommand {
 					return true;
 				}
 			} else {
-				lib.sendMessage(p, lib.playerUnknown(args[0]));
+				lib.sendMessage(p, lib.invalidPlayer(args[0]));
 			}
 			return true;
 		}

@@ -86,7 +86,7 @@ public class CommandTag extends ClanSubCommand {
 						});
 					}
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 				}
 			} else {
 				lib.sendMessage(p, lib.notInClan());

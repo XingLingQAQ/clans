@@ -3,7 +3,6 @@ package com.github.sanctum.clans.model.backend;
 import com.github.sanctum.clans.model.BanksAPI;
 import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
-import com.github.sanctum.clans.model.ClanBankBackend;
 import com.github.sanctum.clans.model.ClanBankLog;
 import com.github.sanctum.clans.event.bank.BankTransactionEvent;
 import com.github.sanctum.panther.file.Configurable;
@@ -21,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClanFileBankBackend implements ClanBankBackend {
+public class ClanBankBackend implements com.github.sanctum.clans.model.ClanBankBackend {
 
     @Override
     public CompletableFuture<@Nullable BigDecimal> readBalance(@NotNull Clan clan) {
@@ -55,7 +54,7 @@ public class ClanFileBankBackend implements ClanBankBackend {
     @Override
     public CompletableFuture<Boolean> readIsDisabled(@NotNull Clan clan) {
         return CompletableFuture.completedFuture(clan)
-                .thenApply(ClanFileBankBackend::getClanFile)
+                .thenApply(ClanBankBackend::getClanFile)
                 .thenApplyAsync(this::readIsDisabledFunction);
     }
 
@@ -85,7 +84,7 @@ public class ClanFileBankBackend implements ClanBankBackend {
     @Override
     public CompletableFuture<List<ClanBankLog.Transaction>> readTransactions(@NotNull Clan clan) {
         return CompletableFuture.completedFuture(clan)
-                .thenApply(ClanFileBankBackend::getClanFile)
+                .thenApply(ClanBankBackend::getClanFile)
                 .thenApplyAsync(this::readTransactionsFunction);
     }
 
@@ -93,7 +92,7 @@ public class ClanFileBankBackend implements ClanBankBackend {
         final ArrayList<ClanBankLog.Transaction> transactions = new ArrayList<>();
         clanFile.getStringList("bank-data.transactions")
                 .parallelStream()
-                .map(ClanFileBankBackend::decodeTransaction)
+                .map(ClanBankBackend::decodeTransaction)
                 .forEach(transactions::add);
         return transactions;
     }
@@ -105,7 +104,8 @@ public class ClanFileBankBackend implements ClanBankBackend {
             final ArrayList<String> list = new ArrayList<>(clanFile.getStringList("bank-data.transactions"));
             list.add(encodeTransaction(transaction));
             clanFile.set("bank-data.transactions", list);
-        }).thenRun(clanFile::save);
+            clanFile.save();
+        });
     }
 
     @Override
@@ -117,7 +117,8 @@ public class ClanFileBankBackend implements ClanBankBackend {
                 representations.add(encodeTransaction(transaction));
             }
             clanFile.set("bank-data.transactions", representations);
-        }).thenRun(clanFile::save);
+            clanFile.save();
+        });
     }
 
     private static Configurable getClanFile(Clan clan) {

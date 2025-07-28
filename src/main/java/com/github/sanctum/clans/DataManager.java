@@ -33,12 +33,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 
-public class DataManager {
+public final class DataManager {
 
 	public final Map<Player, String> ID_MODE = new HashMap<>();
 	private final Set<Player> CHAT_SPY = new HashSet<>();
 	private final List<ClanCooldown> COOLDOWNS = new LinkedList<>();
 	private final DataTable resetTable = new LabyrinthDataTable();
+
 
 	public static class Side {
 		public static final int LEFT = 1;
@@ -91,7 +92,7 @@ public class DataManager {
 	}
 
 	public @NotNull FileManager getClanFile(Clan c) {
-		return ClansAPI.getInstance().getFileList().get(c.getId().toString(), "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).TYPE);
+		return ClansAPI.getInstance().getFileList().get(c.getId().toString(), "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).DATATYPE);
 	}
 
 	public String getConfigString(String path) {

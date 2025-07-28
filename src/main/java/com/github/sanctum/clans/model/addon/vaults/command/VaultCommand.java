@@ -30,7 +30,7 @@ public class VaultCommand extends ClanSubCommand {
 					return true;
 				}
 				if (!Clearance.MANAGE_VAULT.test(associate)) {
-					Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+					Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 					return true;
 				}
 				Clan clan = ClansAPI.getInstance().getClanManager().getClan(p.getUniqueId());

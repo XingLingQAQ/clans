@@ -103,7 +103,7 @@ public class CommandMode extends ClanSubCommand {
 					return true;
 				}
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 				return true;
 			}
 			return true;
@@ -197,7 +197,7 @@ public class CommandMode extends ClanSubCommand {
 						break;
 				}
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 				return true;
 			}
 			return true;

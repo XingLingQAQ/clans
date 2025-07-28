@@ -9,7 +9,6 @@ import com.github.sanctum.labyrinth.library.Teleport;
 import com.github.sanctum.labyrinth.library.TimeWatch;
 import com.github.sanctum.labyrinth.task.TaskScheduler;
 import com.github.sanctum.panther.annotation.Ordinal;
-import com.github.sanctum.skulls.SkullType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
+import com.github.sanctum.skulls.SkullReferenceType;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -94,7 +95,7 @@ public class ServerAssociate implements Clan.Associate, Consultant {
 	 * @return Gets the players cached head skin.
 	 */
 	public ItemStack getHead() {
-		return SkullType.PLAYER.get();
+		return SkullReferenceType.PLAYER.getItem();
 	}
 
 	/**

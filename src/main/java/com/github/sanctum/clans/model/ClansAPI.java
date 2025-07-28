@@ -208,12 +208,21 @@ public interface ClansAPI {
 	boolean isNameBlackListed(String name);
 
 	/**
-	 * Get the local fingerprint key for clans pro data reloading.
+	 * Get the local fingerprint key for clans data reloading.
 	 *
-	 * @return the namespace (key) for the clans pro fingerprint.
+	 * @return the namespace (key) for the clans fingerprint.
 	 */
-	default NamespacedKey getLocalPrintKey() {
-		return new NamespacedKey(getPlugin(), "reload_data");
+	default NamespacedKey getConfigKey() {
+		return new NamespacedKey(getPlugin(), "reload_config");
+	}
+
+	/**
+	 * Get the local fingerprint key for clans data relaoding.
+	 *
+	 * @return the namespace (key) for the clans fingerprint.
+	 */
+	default NamespacedKey getMessagesKey() {
+		return new NamespacedKey(getPlugin(), "reload_messages");
 	}
 
 	/**

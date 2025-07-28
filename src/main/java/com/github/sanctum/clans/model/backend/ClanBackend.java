@@ -51,7 +51,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClanFileBackend extends StringLibrary {
+public class ClanBackend extends StringLibrary {
 
 	private final ClansAPI API = ClansAPI.getInstance();
 
@@ -84,7 +84,7 @@ public class ClanFileBackend extends StringLibrary {
 			@Override
 			public Clan deploy() {
 				Player p = Bukkit.getPlayer(owner);
-				StringLibrary lib = StringLibrary.LOCAL;
+				StringLibrary lib = ClanBackend.this;
 				if (API.getClanManager().getClanID(owner) == null) {
 					if (name.length() > ClansAPI.getDataInstance().getConfig().read(c -> c.getInt("Formatting.tag-size"))) {
 						if (!silent) {
@@ -111,8 +111,8 @@ public class ClanFileBackend extends StringLibrary {
 						DefaultClan instance = new DefaultClan(positionRegistry, newID);
 						instance.setName(name);
 						boolean war = LabyrinthProvider.getInstance().getLocalPrintManager()
-								.getPrint(ClansAPI.getInstance().getLocalPrintKey())
-								.getString(ClanGameRule.DEFAULT_WAR_MODE)
+								.getPrint(ClansAPI.getInstance().getConfigKey())
+								.getString(ClanGameAttributes.DEFAULT_WAR_MODE)
 								.equalsIgnoreCase("peace");
 						instance.setPeaceful(war);
 						if (e.getPassword() != null) {
@@ -138,7 +138,7 @@ public class ClanFileBackend extends StringLibrary {
 				} else {
 					if (!silent) {
 						if (p != null) {
-							lib.sendMessage(p, lib.alreadyInClan());
+							lib.sendMessage(p, lib.cannotJointMultipleClans());
 						}
 					}
 				}
@@ -245,7 +245,7 @@ public class ClanFileBackend extends StringLibrary {
 					PlayerJoinClanEvent event = ClanVentBus.call(new PlayerJoinClanEvent(p, (DefaultClan) c));
 					if (!event.isCancelled()) {
 						if (!getAllClanNames().contains(clanName)) {
-							sendMessage(p, clanUnknown(clanName));
+							sendMessage(p, invalidClan(clanName));
 							return c;
 						}
 						Clan.Rank normal = RankRegistry.getInstance().getLowest();
@@ -281,7 +281,7 @@ public class ClanFileBackend extends StringLibrary {
 							}
 						} else {
 							if (!silent) {
-								sendMessage(p, wrongPassword());
+								sendMessage(p, invalidPassword());
 							}
 						}
 					}
@@ -307,7 +307,7 @@ public class ClanFileBackend extends StringLibrary {
 				return c;
 			} else {
 				if (Bukkit.getPlayer(target) != null) {
-					sendMessage(Bukkit.getPlayer(target), alreadyInClan());
+					sendMessage(Bukkit.getPlayer(target), cannotJointMultipleClans());
 				}
 				return associate.getClan();
 			}
@@ -607,7 +607,7 @@ public class ClanFileBackend extends StringLibrary {
 		if (associate == null) return;
 		Clan clan =  associate.getClan();
 		List<String> array = new ArrayList<>();
-		List<String> info_board = (List<String>) ClanGameRule.of(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(API.getLocalPrintKey())).get(ClanGameRule.CLAN_INFO_SIMPLE);
+		List<String> info_board = (List<String>) ClanGameAttributes.of(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(API.getConfigKey())).get(ClanGameAttributes.CLAN_INFO_SIMPLE);
 		info_board.forEach(s -> {
 			if (clan instanceof DefaultClan) {
 				array.add(((DefaultClan)clan).replacePlaceholders(s));

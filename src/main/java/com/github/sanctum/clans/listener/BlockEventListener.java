@@ -2,33 +2,26 @@ package com.github.sanctum.clans.listener;
 
 import com.github.sanctum.clans.model.ClanVentBus;
 import com.github.sanctum.clans.model.ClanVentCall;
-import com.github.sanctum.clans.model.backend.ClanFileBackend;
+import com.github.sanctum.clans.model.backend.ClanBackend;
 import com.github.sanctum.clans.model.Claim;
 import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.clans.model.Clearance;
-import com.github.sanctum.clans.model.LogoHolder;
 import com.github.sanctum.clans.util.ShieldTamper;
 import com.github.sanctum.clans.event.claim.ClaimInteractEvent;
 import com.github.sanctum.clans.event.claim.RaidShieldEvent;
-import com.github.sanctum.labyrinth.data.EconomyProvision;
 import com.github.sanctum.labyrinth.event.DefaultEvent;
 import com.github.sanctum.labyrinth.library.StringUtils;
 import com.github.sanctum.panther.event.Subscribe;
 import com.github.sanctum.panther.event.Vent;
-import java.math.BigDecimal;
+
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import net.md_5.bungee.api.ChatColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -36,7 +29,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 public class BlockEventListener implements Listener {
@@ -102,7 +94,7 @@ public class BlockEventListener implements Listener {
 	@Subscribe(priority = Vent.Priority.READ_ONLY)
 	public void onShield(RaidShieldEvent e) {
 		final ClansAPI api = e.getApi();
-		final ClanFileBackend action = Clan.ACTION;
+		final ClanBackend action = Clan.ACTION;
 		final World world = Optional.ofNullable(Bukkit.getWorld(ClansAPI.getDataInstance().getConfig().getRoot().getString("Clans.raid-shield.main-world"))).orElse(Bukkit.getWorlds().get(0));
 		if (action.isNight(world, e.getStartTime(), e.getStopTime())) {
 			if (api.getShieldManager().isEnabled()) {
@@ -168,7 +160,7 @@ public class BlockEventListener implements Listener {
 							}
 						} else {
 							if (!Clearance.LAND_USE_INTERACTABLE.test(associate)) {
-								Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.noClearance());
+								Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.notEnoughClearance());
 								e.setCancelled(true);
 							}
 						}
@@ -190,7 +182,7 @@ public class BlockEventListener implements Listener {
 							}
 						} else {
 							if (!Clearance.LAND_USE_INTERACTABLE.test(associate)) {
-								Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.noClearance());
+								Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.notEnoughClearance());
 								e.setCancelled(true);
 							}
 						}
@@ -214,7 +206,7 @@ public class BlockEventListener implements Listener {
 						}
 					} else {
 						if (!Clearance.LAND_USE.test(associate)) {
-							Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.noClearance());
+							Clan.ACTION.sendMessage(e.getPlayer(), Clan.ACTION.notEnoughClearance());
 							e.setCancelled(true);
 						}
 					}

@@ -50,7 +50,7 @@ public class CommandSetbase extends ClanSubCommand {
 					}
 				}
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 				return true;
 			}
 			return true;

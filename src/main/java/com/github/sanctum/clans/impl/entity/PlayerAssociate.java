@@ -16,7 +16,6 @@ import com.github.sanctum.panther.file.MemorySpace;
 import com.github.sanctum.panther.file.Node;
 import com.github.sanctum.panther.file.Primitive;
 import com.github.sanctum.skulls.CustomHead;
-import com.github.sanctum.skulls.SkullType;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +29,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import com.github.sanctum.skulls.SkullReferenceType;
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -49,7 +51,7 @@ public final class PlayerAssociate implements Clan.Associate, PersistentEntity {
 	private final Clan clanObject;
 	private Clan.Rank rank;
 	private ChatChannel chat;
-	private ItemStack head = SkullType.PLAYER.get();
+	private ItemStack head = SkullReferenceType.PLAYER.getItem();
 	private final Object data;
 	private final Tag tag;
 	private final Map<Long, Long> killMap;
@@ -116,7 +118,7 @@ public final class PlayerAssociate implements Clan.Associate, PersistentEntity {
 		this.rank = priority;
 		this.chat = ChatChannel.GLOBAL;
 		TaskScheduler.of(() -> {
-			this.head = CustomHead.Manager.get(name);
+			this.head = SkullReferenceUtility.getItem(name);
 		}).scheduleLaterAsync(2L);
 		this.killMap = new HashMap<>();
 	}

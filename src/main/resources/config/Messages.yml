@@ -168,21 +168,38 @@ Commands:
 # Messages that get sent on a successful completion.
 #=====================================================#
 Response:
+  base: '&eWelcome to the clan base.'
+  base-changed: '&aThe clan base location was updated.'
+  bank-header: '&fBanks' # displays with Clans prefix prepended
+  bank-greeting: '&bWelcome, {0}&b.' # {0} = Player name
+  bank-greeting-hover: "&6In clan: &f{0}\n&aClick to get balance" # {0} = clan name
+  bank-current-balance: "&bCurrent bank balance: &a{0}" # {0} = Balance
+  bank-command-listing: '&6Commands:'
+  bank-command-usage: '&6Usage:'
+  bank-hover-balance: 'Get the current bank balance' #describes balance subcommand
+  bank-hover-deposit: 'Deposit money into the clan bank' #describes deposit subcommand
+  bank-hover-withdraw: 'Withdraw money from the clan bank' #describes withdraw subcommand
+  bank-deposit-message-player: '&7You deposited &a{0} &7into the clan bank.'
+  bank-withdraw-message-player: '&7You withdrew &c{0} &7from the clan bank.'
+  chat: '&7&oSwitched to &a{0} &7&ochat channel.'
+  cached-head: '&aSuccessfully logged head into cache.'
+  claim: '&3&oNew land was claimed @ Chunk position: &7X:&b{0} &7Z:&b{1} &3&oin world &7{2}'
+  claim-hint: '&f[&7HINT&f] &7&oView chunk border''s in game by pressing and releasing keys F3+G.'
+  claim-breach: '&7[&4CLAIM-BREACH&7] &6Clan &d&o{0} &r&o:'
+  claim-higherpower: '&7[&4HIGHER-POWER&7] &d&o{0} &r&o:'
+  claim-overpowered: '&7&oLand was &4over-powered&7&o @ Chunk position: &7X:&b{0} &7Z:&b{1} &3&oin world &7{2}'
+  clan-status: '&aThe clan status was set to {0}'
+  cooldown-expired: '&6&oCooldown &f[&b&o{0}&f] &6&oexpired.'
   creation: '&a&o{0} created a &f{1} &a&oclan &7{2}'
   deletion: '&c&oClan "{0}&c&o" has fallen...'
+  demotion: '&d&oPlayer "{0}" was demoted.'
   kick-out: '&e&oPlayer "{0}" was kicked from the clan.'
   kick-in: '&4&o{0} kicked you from the clan.'
   member-join: '&a&oPlayer "{0}" joined the clan.'
   member-leave: '&c&oPlayer "{0}" left the clan.'
-  clan-status: '&aThe clan status was set to {0}'
   password-change: '&b&oThe clan password has been changed to &f{0}&b&o.'
   promotion: '&a&oPlayer "{0}" was promoted.'
-  demotion: '&d&oPlayer "{0}" was demoted.'
   tag-change: '&b&oThe clan name was changed to {0}'
-  base-changed: '&aThe clan base location was updated.'
-  base: '&eWelcome to the clan base.'
-  chat: '&7&oSwitched to &a{0} &7&ochat channel.'
-  cached-head: '&aSuccessfully logged head into cache.'
   neutral: '&f&oNow neutral with clan "&e{0}&f&o".'
   enemies: '&4&oNow enemies with clan &f"{0}"&4&o.'
   allies: '&a&oNow allies with clan &f"{0}"&a&o.'
@@ -207,36 +224,19 @@ Response:
   war: '&7(&4!&7) &4&L{0} &6&lIS NOW IN &4&lWAR MODE.'
   friendly-fire-on: '&c{0} turned friendlyfire on'
   friendly-fire-off: '&a{0} turned friendlyfire off.'
-  claim: '&3&oNew land was claimed @ Chunk position: &7X:&b{0} &7Z:&b{1} &3&oin world &7{2}'
   un-claim: '&c&oLand was un-claimed @ Chunk position: &7X:&b{0} &7Z:&b{1} &c&oin world &7{2}'
   un-claim-all: '&e&oAll land has been un-claimed by: &3&n{0}'
   un-claim-cooldown: '&cYou are now on a land un-claiming cooldown.'
-  claim-hint: '&f[&7HINT&f] &7&oView chunk border''s in game by pressing and releasing keys F3+G.'
-  claim-breach: '&7[&4CLAIM-BREACH&7] &6Clan &d&o{0} &r&o:'
-  claim-higherpower: '&7[&4HIGHER-POWER&7] &d&o{0} &r&o:'
-  claim-overpowered: '&7&oLand was &4over-powered&7&o @ Chunk position: &7X:&b{0} &7Z:&b{1} &3&oin world &7{2}'
-  cooldown-expired: '&6&oCooldown &f[&b&o{0}&f] &6&oexpired.'
-  bank-header: '&fBanks' # displays with Clans prefix prepended
   removed-out: '&5&oA staff member has removed you from your current clan.'
-  bank-greeting: '&bWelcome, {0}&b.' # {0} = Player name
-  bank-greeting-hover: "&6In clan: &f{0}\n&aClick to get balance" # {0} = clan name
-  bank-current-balance: "&bCurrent bank balance: &a{0}" # {0} = Balance
-  bank-command-listing: '&6Commands:'
-  bank-command-usage: '&6Usage:'
-  bank-hover-balance: 'Get the current bank balance' #describes balance subcommand
-  bank-hover-deposit: 'Deposit money into the clan bank' #describes deposit subcommand
-  bank-hover-withdraw: 'Withdraw money from the clan bank' #describes withdraw subcommand
-  bank-deposit-message-player: '&7You deposited &a{0} &7into the clan bank.'
-  bank-withdraw-message-player: '&7You withdrew &c{0} &7from the clan bank.'
-  teleporting: '&aTeleporting in {0} seconds, don''t move.'
-  teleported: '&aYou have been teleported.'
-  teleport-cancelled: '&cYou moved! Teleportation cancelled!'
   reservoir-power-obtained: '{0} obtained clan power through the reservoir for us'
   reservoir-repaired: '&aOur reservoir was repaired by {0}'
   reservoir-removed: '&c{0} has taken down our clans reservoir.'
   reservoir-powered-down-attacking: '&aAssociate &6{0} &apowered down &6{1}''s &areservoir! Hurry to defend and collect! If you give the enemy team too much time siphoning will stop!'
   reservoir-powered-down-victim: '&4&lBreach &7» &cOur reservoir was powered down by player &6{0} &cof clan &6{1}&c! Hurry and repair it before we lose too much power!'
   reservoir-siphoning-stopped-victim: '&cReservoir siphoning has stopped, but our reservoir is badly damaged, repair it to prevent further siphoning.'
+  teleporting: '&aTeleporting in {0} seconds, don''t move.'
+  teleported: '&aYou have been teleported.'
+  teleport-cancelled: '&cYou moved! Teleportation cancelled!'
 
   #==========================================================================#
   #  ███╗   ██╗ ██████╗ ███╗   ██╗      ██╗   ██╗ █████╗ ██╗     ██╗██████╗
@@ -247,57 +247,24 @@ Response:
   #  ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═══╝        ╚═══╝  ╚═╝  ╚═╝╚══════╝╚═╝╚═════╝
   # Messages that get sent when something goes wrong executing something.
   #============================================================================#
-  cooldown-active: '&7You can do this again in &f(&3D&f)&b %d &7: &f(&3H&f)&b %h &7: &f(&3M&f)&b %m &7: &f(&3S&f)&b %s'
-  no-clan: 'You are not in a clan.'
-  name-invalid: '&c&oInvalid name. Must contain only Alpha-numeric characters.'
-  no-base: '&c&oYour clan doesn''t have a base set.'
-  no-claims: 'Your clan has no land to unclaim. Consider obtaining some?'
-  no-clearance: '&cYou do not have clan clearance.'
-  no-permission: '&cYou do not have permission &4{0}'
-  no-removal: '&c&oThis clan initiated you as an &4enemy. &cUnable to pardon.'
-  not-enough-money: '&cYou don''t have enough money you need {0} more dollars'
-  friendly-fire: '&cYou cannot hurt allies!'
-  clan-unknown: '&c{0} was not found.'
-  blocked: '&c{0} has you blocked, unable to send invite.'
-  clan-neutral: '&c&oYou are not enemies with this clan. Unable to overpower ally claim.'
-  clan-not-ready: '&c&oThe other clan hasn''t yet agreed to a full on war.'
-  player-unknown: '&cTarget {0} was not found.'
-  page-unknown: '&cInvalid page number'
-  command-unknown: 'Unknown sub-command use "/{0}" for help.'
-  password-wrong: '&cThe password you entered was wrong.'
-  password-invalid: '&c&oInvalid password. Must contain only Alpha-numeric characters.'
-  claim-not-connected: '&c&oYou cannot claim here. All claims must be connected.'
-  already-owned: '&cYour clan already owns this land.'
-  already-occupied: '&cYou are already in a clan.'
   already-made: '&c&oA clan with this name already exists! Try another.'
   already-max: '&c&oThis player is rank &b&o{0} &c&omost powerful next to &b&l{1}'
   already-min: '&c&oThis player is already the lowest rank possible ({0})!'
   already-in-match: '&c&oAlready in a death-match.'
-  hard-max-claims: '&c&oClaim hardcap reached. You have as much land as you can get! Or you don''t have any... consult with local admins.'
-  clan-max-claims: '&c&oMax claim limit reached grow your clan power and size to obtain more land.'
   already-max-claims: '&c&oMax claim limit reached, contact a staff member for more info.'
   already-neutral: '&fYou are already neutral with {0}'
   already-allies: '&c&oYou are already allies with this clan. To become neutral type &7/clan ally remove {0}'
   already-enemies: '&c&oYou are already enemies with this clan. To become neutral type &7/clan enemy remove {0}'
   already-requested: '&e&oWaiting on a response from &f{0}'
   already-peace: '&cYou are already in peaceful mode.'
+  already-owned: '&cYour clan already owns this land.'
   already-war: '&cYou are already in war mode.'
   already-first-page: '&cYou are already on the first page.'
   already-last-page: '&cYou are on the last page.'
   already-wild: '&cThis land belongs to: &4&nWilderness&c, and is free to claim.'
-  not-owner: '&cYou don''t own this land, it belongs to: {0}'
-  not-enemies: '&f&oYou are not enemies with this clan.'
-  not-enough: '&cYou don''t have enough money you need: &6{0}'
-  too-long: '&c&oThe clan name you have chosen is too long! Max tag length reached.'
-  too-weak: '&cYour clans power is too weak.'
-  self-denial: '&cYou cannot use your name.'
-  safe-zone: '&cYou are within range of {0}''s base, this is considered a safe zone.'
   alliance-denial: '&c&oYou cannot ally your own clan.'
   alliance-requested-in: '&a&oAlly invitation sent.'
   alliance-requested-out: '&a&oClan "&e{0}&a&o" wishes to ally, to accept &7Type &f/clan ally &6{1}'
-  peaceful-deny: '&cYou cannot do this while in peaceful mode!'
-  peaceful-deny-other: '&cYou cannot do this while {0} is in peaceful mode!'
-  shield-deny: '&5&oYou cannot attempt anything right now.. The shield is resilient.'
   bank-deposit-error-player: '&cUnable to deposit {0}' # {0} = amount
   bank-withdraw-error-player: '&cUnable to withdraw {0}' # {0} = amount
   bank-amount: 'amount' # Displayed when prompting user for number
@@ -305,7 +272,34 @@ Response:
   bank-invalid-amount: '&cInvalid number!'
   bank-invalid-subcommand: '&cInvalid subcommand!'
   bank-no-permission-command: '&cYou do not have permission to run this command.'
+  blocked: '&c{0} has you blocked, unable to send invite.'
+  clan-neutral: '&c&oYou are not enemies with this clan. Unable to overpower ally claim.'
+  clan-not-ready: '&c&oThe other clan hasn''t yet agreed to a full on war.'
+  clan-max-claims: '&c&oMax claim limit reached grow your clan power and size to obtain more land.'
+  claim-not-connected: '&c&oYou cannot claim here. All claims must be connected.'
+  cannot-join-multiple-clans: '&cYou are already in a clan.'
+  command-unknown: 'Unknown sub-command use "/{0}" for help.'
+  cooldown-active: '&7You can do this again in &f(&3D&f)&b %d &7: &f(&3H&f)&b %h &7: &f(&3M&f)&b %m &7: &f(&3S&f)&b %s'
+  friendly-fire: '&cYou cannot hurt allies!'
+  hard-max-claims: '&c&oClaim hardcap reached. You have as much land as you can get! Or you don''t have any... consult with local admins.'
+  invalid-clan: '&c{0} was not found.'
+  invalid-player: '&cTarget {0} was not found.'
+  invalid-password: '&cThe password you entered was wrong.'
+  invalid-password-format: '&c&oInvalid password. Must contain only Alpha-numeric characters.'
   max-clans: '&cYour server already has its max amount of clans created.'
+  name-invalid: '&c&oInvalid name. Must contain only Alpha-numeric characters.'
+  not-enough-clearance: '&cYou do not have clan clearance.'
+  not-enough-money: '&cYou don''t have enough money you need {0} more dollars'
+  not-in-clan: 'You are not in a clan.'
+  not-owner: '&cYou don''t own this land, it belongs to: {0}'
+  not-enemies: '&f&oYou are not enemies with this clan.'
+  no-base: '&c&oYour clan doesn''t have a base set.'
+  no-claims: 'Your clan has no land to unclaim. Consider obtaining some?'
+  no-permission: '&cYou do not have permission &4{0}'
+  no-removal: '&c&oThis clan initiated you as an &4enemy. &cUnable to pardon.'
+  page-unknown: '&cInvalid page number'
+  peaceful-deny: '&cYou cannot do this while in peaceful mode!'
+  peaceful-deny-other: '&cYou cannot do this while {0} is in peaceful mode!'
   reservoir-already-active: '&cYour clan already has a reservoir powered up!'
   reservoir-not-homeland: '&cYour clan reservoir must be within an owned claim.'
   reservoir-repair-failed: '&c{0] is not a valid item to repair the reservoir with.'
@@ -314,6 +308,11 @@ Response:
   reservoir-power-tapped: '&cAll the power from this reservoir has been tapped!'
   reservoir-siphoning-stopped-attacking: '&cReservoir siphoning has stopped, at-least one member of the clan must be within 8 blocks of the reservoir during siphoning.'
   reservoir-already-under-attack: '&cThis reservoir is already being siphoned.'
+  shield-deny: '&5&oYou cannot attempt anything right now.. The shield is resilient.'
+  self-denial: '&cYou cannot use your name.'
+  safe-zone: '&cYou are within range of {0}''s base, this is considered a safe zone.'
+  too-long: '&c&oThe clan name you have chosen is too long! Max tag length reached.'
+  too-weak: '&cYour clans power is too weak.'
 
   #=================================================#
   #  ██╗   ██╗███████╗ █████╗  ██████╗ ███████╗
@@ -660,7 +659,7 @@ menu:
     # :clan_nick_name_colored:  "Get the nick name of the clan colored"
     pagination:
       name: '&6Clan: :clan_color::clan_name:'
-      lore: [ "&f&m,----------", "Click for members.", "&f&m----------" ]
+      lore: [ "&f&m,----------", "Click for members.", "&f&m----------", "&fLogo:", ":clan_logo:", "&f&m----------" ]
       type: clan
       locked: true
       open: 'Clans::clan_name:-members'
@@ -715,7 +714,7 @@ menu:
     # :clan_nick_name_colored:  "Get the nick name of the clan colored"
     pagination:
       name: '&6Clan: :clan_color::clan_name:'
-      lore: [ "&f&m,----------", "Click for members.", "&f&m----------" ]
+      lore: [ "&f&m,----------", "Click for members.", "&f&m----------", "&fLogo:", ":clan_logo:", "&f&m----------" ]
       type: clan
       locked: true
       open: 'Clans::clan_name:-members'
@@ -933,42 +932,83 @@ menu:
     # :clan_nick_name_colored:  "Get the nick name of the clan for this associate colored"
     # Normal placeholders work here aswell.
     bank:
-      title: '&6:clan_name: Bank options'
+      title: '&e&l:clan_name: &8» &6Bank options'
       rows: THREE
       type: SINGULAR
       filler:
         name: ' '
         locked: true
-        type: glasspane
-      items:
-        '&a+5':
-          slot: 10
-          lore: ["&fDeposit 5 dollars"]
+        type: graystainedglasspane
+      border:
+        name: ' '
+        locked: true
+        type: graystainedglasspane
+      deposit:
+        title: '&6Deposit &8» &7&l:member_name:'
+        type: PRINTABLE
+        # anvil menus work a tiny bit differently as there is less to customize.
+        item:
+          name: 'Enter amount'
           locked: true
+          open: '/clan bank deposit :message:'
           close: true
-          type: goldingot
-          open: '/clan bank deposit 5'
+          type: paper
+      withdraw:
+        title: '&6Withdraw &8» &7&l:member_name:'
+        type: PRINTABLE
+        # anvil menus work a tiny bit differently as there is less to customize.
+        item:
+          name: 'Enter amount'
+          locked: true
+          open: '/clan bank withdraw :message:'
+          close: true
+          type: paper
+      items:
         '&a+10':
-          slot: 12
+          slot: 10
           lore: [ "&fDeposit 10 dollars" ]
           locked: true
           close: true
           type: goldingot
           open: '/clan bank deposit 10'
+        '&a+50':
+          slot: 11
+          lore: [ "&fDeposit 50 dollars" ]
+          locked: true
+          close: true
+          type: goldingot
+          open: '/clan bank deposit 50'
         '&a+100':
-          slot: 14
+          slot: 12
           lore: [ "&fDeposit 100 dollars" ]
           locked: true
           close: true
           type: goldingot
           open: '/clan bank deposit 100'
-        '&a+500':
-          slot: 16
-          lore: [ "&fDeposit 500 dollars" ]
+        '[SPECIFY+]':
+          name: '&a+&7XX.XX'
+          slot: 14
+          lore: [ "&fDeposit a specified amount" ]
           locked: true
           close: true
-          type: goldingot
-          open: '/clan bank deposit 500'
+          type: waterbucket
+          open: '/clan bank deposit gui'
+        '[SPECIFY-]':
+          name: '&c-&7XX.XX'
+          slot: 16
+          lore: [ "&fWithdraw a specified amount" ]
+          locked: true
+          close: true
+          type: lavabucket
+          open: '/clan bank withdraw gui'
+        '[RETURN]':
+          name: '&cBack'
+          slot: 22
+          lore: [ "&cGo back to main screen." ]
+          locked: true
+          close: true
+          type: arrow
+          open: '/clan'
     # This is a default sub menu it allows users to control their allies and enemies through gui.
     # Associate provided placeholders work here:
     # :member_name:  "Get the associates name"
@@ -1445,42 +1485,36 @@ menu:
         slot: 20
         locked: true
         open: '/clan gui %player_name%'
-        close: true
         type: glasspane
         lore: [ "&fView your clan info." ]
       '&6Bank Options':
         slot: 22
         locked: true
         open: '/clan bank gui'
-        close: true
         type: goldingot
         lore: [ "&fView clan bank options." ]
       '&9Clan Relations':
         slot: 24
         locked: true
         open: '/clan relations'
-        close: true
         type: anvil
         lore: [ "&fView your clan info." ]
       '&eClan Vault':
         slot: 31
         locked: true
         open: '/clan vault'
-        close: true
         type: chest
         lore: [ "&fView your clan vault." ]
       '&bClan Chat':
         slot: 29
         locked: true
         open: '/clan chat'
-        close: true
         type: greenstainedglasspane
         lore: [ "&fChange your clan chat." ]
       '&6Reservoir':
         slot: 33
         locked: true
         open: '/clan reservoir'
-        close: true
         type: endcrystal
         lore: [ "&eAccess your clans reservoir." ]
       '&cClose Menu':

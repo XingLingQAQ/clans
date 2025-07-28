@@ -2,6 +2,7 @@ package com.github.sanctum.clans.util;
 
 import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
+import com.github.sanctum.labyrinth.api.LegacyCheckService;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -19,6 +20,7 @@ public class AboveHeadDisplayName {
 	}
 
 	public static void set(Clan.Associate associate, String prefix) {
+		if (LegacyCheckService.VERSION.contains("1_8")) return;
 		Scoreboard scoreboard = associate.getTag().getPlayer().getPlayer().getScoreboard();
 		Team team = getTeam(associate.getTag().getPlayer().getPlayer());
 		if (team == null) {
@@ -46,6 +48,7 @@ public class AboveHeadDisplayName {
 	}
 
 	public static void set(Player player, String prefix) {
+		if (LegacyCheckService.VERSION.contains("1_8")) return;
 		Clan.Associate associate = ClansAPI.getInstance().getAssociate(player).orElse(null);
 		Scoreboard scoreboard = player.getScoreboard();
 
@@ -70,6 +73,7 @@ public class AboveHeadDisplayName {
 	}
 
 	public static void update(Player player, String prefix) {
+		if (LegacyCheckService.VERSION.contains("1_8")) return;
 		Clan.Associate associate = ClansAPI.getInstance().getAssociate(player).orElse(null);
 
 		if (associate == null) {
@@ -89,7 +93,7 @@ public class AboveHeadDisplayName {
 	}
 
 	public static void remove(Clan.Associate associate) {
-
+		if (LegacyCheckService.VERSION.contains("1_8")) return;
 		if (!associate.isValid()) return;
 
 		Scoreboard scoreboard = associate.getTag().getPlayer().getPlayer().getScoreboard();
@@ -124,6 +128,7 @@ public class AboveHeadDisplayName {
 	}
 
 	public static void remove(Player player) {
+		if (LegacyCheckService.VERSION.contains("1_8")) return;
 		Scoreboard scoreboard = player.getScoreboard();
 		try {
 			if (getTeam(player) != null) {

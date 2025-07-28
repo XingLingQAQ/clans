@@ -29,7 +29,7 @@ public class CommandDescription extends ClanSubCommand {
 					Clan c = associate.getClan();
 					c.setDescription(args[0]);
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 			}
@@ -46,7 +46,7 @@ public class CommandDescription extends ClanSubCommand {
 					Clan c = associate.getClan();
 					c.setDescription(args[0] + " " + args[1]);
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 			}
@@ -71,7 +71,7 @@ public class CommandDescription extends ClanSubCommand {
 				}
 				c.setDescription(result);
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 				return true;
 			}
 		} else {

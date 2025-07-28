@@ -15,7 +15,6 @@ import com.github.sanctum.panther.file.Node;
 import com.github.sanctum.panther.util.Check;
 import com.github.sanctum.panther.util.HUID;
 import com.github.sanctum.skulls.CustomHead;
-import com.github.sanctum.skulls.SkullType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +26,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
+import com.github.sanctum.skulls.SkullReferenceLookup;
+import com.github.sanctum.skulls.SkullReferenceType;
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Tameable;
@@ -90,7 +93,7 @@ public final class EntityAssociate implements PersistentEntity, Clan.Associate, 
 		};
 		this.rank = priority;
 		this.chat = ChatChannel.GLOBAL;
-		this.head = CustomHead.Manager.get(parent.getName());
+		this.head = SkullReferenceUtility.getItem(parent.getName());
 		this.killMap = new HashMap<>();
 		ClanVentBus.call(new AssociateFromAnimalEvent(this));
 	}
@@ -107,7 +110,7 @@ public final class EntityAssociate implements PersistentEntity, Clan.Associate, 
 	 * @return Gets the players cached head skin.
 	 */
 	public ItemStack getHead() {
-		return head == null ? SkullType.PLAYER.get() : head;
+		return head == null ? SkullReferenceType.PLAYER.getItem() : head;
 	}
 
 	/**

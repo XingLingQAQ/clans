@@ -60,7 +60,7 @@ public class BountyCommand extends ClanSubCommand {
 						Clan.ACTION.sendMessage(p, "&c&oYour clan has already called a bounty on this target.");
 					}
 				} else {
-					Clan.ACTION.sendMessage(p, Clan.ACTION.playerUnknown(args[0]));
+					Clan.ACTION.sendMessage(p, Clan.ACTION.invalidPlayer(args[0]));
 				}
 			} else {
 				Clan.ACTION.sendMessage(p, Clan.ACTION.notInClan());

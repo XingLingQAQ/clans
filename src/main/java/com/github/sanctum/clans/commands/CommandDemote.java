@@ -46,7 +46,7 @@ public class CommandDemote extends ClanSubCommand {
 				if (Clearance.MANAGE_POSITIONS.test(associate)) {
 					UUID tid = Clan.ACTION.getId(args[0]).deploy();
 					if (tid == null) {
-						lib.sendMessage(p, lib.playerUnknown(args[0]));
+						lib.sendMessage(p, lib.invalidPlayer(args[0]));
 						return true;
 					}
 					Clan.Associate member = associate.getClan().getMember(m -> m.getId().equals(tid));
@@ -58,7 +58,7 @@ public class CommandDemote extends ClanSubCommand {
 						return true;
 					}
 					if (member.getRank().getLevel() >= associate.getRank().getLevel()) {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 						return true;
 					}
 					Clan.Rank demotion = member.getRank().getDemotion();
@@ -68,7 +68,7 @@ public class CommandDemote extends ClanSubCommand {
 					}
 					Clan.ACTION.demote(tid).deploy();
 				} else {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 			} else {

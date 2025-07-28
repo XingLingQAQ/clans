@@ -16,7 +16,7 @@ public class CommandAsk extends ClanSubCommand {
 	public boolean player(Player p, String label, String[] args) {
 
 		if (args.length == 0) {
-			Book book = new Book(1, false).setTitle("&7[&3&lClans&7] &6&lInfo").setAuthor("Hempfest");
+			Book book = new Book(1, true).setTitle("&7[&3&lClans&7] &6&lInfo").setAuthor("Hempfest");
 			FileManager config = ClansAPI.getDataInstance().getMessages();
 			List<String> appendage = config.getRoot().getStringList("help-book");
 			appendage.forEach(book::append);

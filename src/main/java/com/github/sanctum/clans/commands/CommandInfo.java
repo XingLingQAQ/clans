@@ -13,17 +13,16 @@ import com.github.sanctum.labyrinth.data.service.PlayerSearch;
 import com.github.sanctum.labyrinth.formatting.completion.SimpleTabCompletion;
 import com.github.sanctum.labyrinth.formatting.completion.TabCompletionIndex;
 import com.github.sanctum.panther.util.PantherString;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
+
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class CommandInfo extends ClanSubCommand {
 	public CommandInfo() {
 		super("info");
-		setAliases(Collections.singletonList("i"));
+		setAliases(Arrays.asList("i", "information"));
 		setUsage(ClansAPI.getDataInstance().getMessageString("Commands.info.text"));
 	}
 
@@ -90,7 +89,7 @@ public class CommandInfo extends ClanSubCommand {
 			// check if it's a player, if not stop and operate.
 			if (target == null) {
 				if (!Clan.ACTION.getAllClanNames().contains(args[0])) {
-					lib.sendMessage(p, lib.clanUnknown(args[0]));
+					lib.sendMessage(p, lib.invalidClan(args[0]));
 					return true;
 				}
 				// they're in a clan and the info they wanna see is their own clan's

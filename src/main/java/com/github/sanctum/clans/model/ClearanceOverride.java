@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.github.sanctum.panther.annotation.Ordinal;
+import com.github.sanctum.panther.container.PantherMap;
+import com.github.sanctum.panther.file.Configurable;
+import com.github.sanctum.panther.util.OrdinalProcedure;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 public class ClearanceOverride {
@@ -20,12 +26,12 @@ public class ClearanceOverride {
 		this.data = data;
 		if (data.rankMap.isEmpty()) {
 			RankRegistry registry = RankRegistry.getInstance();
-			registry.getRanks().forEach(this::loadClearances); // called one time, once saved will never load again.
+			registry.getRanks().forEach(this::loadClearances); // called one time.
 		}
 	}
 
 	public boolean add(@NotNull Clearance clearance, @NotNull Clan.Rank position) {
-		if (!data.rankMap.containsKey(position.getName())) {  // clan inherit [groupToInherit] [group] ->
+		if (!data.rankMap.containsKey(position.getName())) {
 			loadClearances(position);
 		}
 		List<String> perms = data.rankMap.get(position.getName());
@@ -37,7 +43,7 @@ public class ClearanceOverride {
 	}
 
 	public boolean remove(@NotNull Clearance clearance, @NotNull Clan.Rank position) {
-		if (!data.rankMap.containsKey(position.getName())) {  // clan inherit [groupToInherit] [group] ->
+		if (!data.rankMap.containsKey(position.getName())) {
 			loadClearances(position);
 		}
 		List<String> perms = data.rankMap.get(position.getName());
@@ -46,6 +52,14 @@ public class ClearanceOverride {
 			return true;
 		}
 		return false;
+	}
+
+	@Ordinal(2)
+	boolean remove(@NotNull String rank) {
+		if (data.rankMap.containsKey(rank)) {
+			data.rankMap.remove(rank);
+			return true;
+		} else return false;
 	}
 
 	public boolean addInheritance(@NotNull Clan.Rank child, @NotNull Clan.Rank parent) {
@@ -100,7 +114,28 @@ public class ClearanceOverride {
 				if (asRank != null) {
 					List<String> individualPermList = getPermissions(asRank, false);
 					list.addAll(individualPermList);
-				} else toRemove.add(rank);
+				} else {
+					// this code should only be ran when a rank is found to be missing.
+					// slightly heavier operation with IO Scan but only circumstantial.
+					// instead of removing here immediately lets try putting in its replacement
+					// Goal: go through all ranks and look for a match of 'old-name'
+					Configurable ranks = ClansAPI.getInstance().getFileList().get("Ranks", "Configuration").getRoot();
+					for (String rankSection : ranks.getKeys(false)) {
+						String old_name = ranks.getNode(rankSection).getNode("old_name").toPrimitive().getString();
+						if (old_name.equals(rank)) {
+							// we found a match lets break out and replace the inheritance
+							Clan.Rank asNewRank = registry.getRank(ranks.getNode(rankSection).getNode("name").toPrimitive().getString());
+							// double check the new rank is in cache.
+							if (asNewRank != null) {
+								List<String> individualPermList = getPermissions(asNewRank, false);
+								list.addAll(individualPermList);
+								break;
+							} else {
+								toRemove.add(rank);
+							}
+						}
+					}
+				}
 			});
 			for (String t : toRemove) {
 				inheritance.remove(t);
@@ -130,7 +165,10 @@ public class ClearanceOverride {
 	 * @return
 	 */
 	public @NotNull List<Clan.Rank> getInheritance(@NotNull Clan.Rank rank) {
-		return getInheritanceNames(rank).stream().map(s -> RankRegistry.getInstance().getRank(s)).collect(Collectors.toList());
+		return getInheritanceNames(rank).stream().map(s -> {
+			Bukkit.getLogger().severe("Got rank " + s + " loaded into '" + rank + "'s' inheritance");
+			return RankRegistry.getInstance().getRank(s);
+		}).collect(Collectors.toList());
 	}
 
 	public static final class ClearanceData implements Serializable {

@@ -1,6 +1,6 @@
 package com.github.sanctum.clans.event;
 
-import com.github.sanctum.clans.model.backend.ClanFileBackend;
+import com.github.sanctum.clans.model.backend.ClanBackend;
 import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.panther.event.Vent;
@@ -50,7 +50,7 @@ public abstract class ClanEvent extends Vent {
 		return this.name;
 	}
 
-	public ClanFileBackend getUtil() {
+	public ClanBackend getUtil() {
 		return Clan.ACTION;
 	}
 

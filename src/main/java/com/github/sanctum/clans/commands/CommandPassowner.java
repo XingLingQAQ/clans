@@ -39,16 +39,16 @@ public class CommandPassowner extends ClanSubCommand {
 
 					if (associate.getRank().isHighest()) {
 						if (!associate.getClan().transferOwnership(ClansAPI.getInstance().getAssociate(target).get())) {
-							sendMessage(p, lib.playerUnknown("clan member"));
+							sendMessage(p, lib.invalidPlayer("clan member"));
 						} else {
 							associate.getClan().broadcast("&eClan ownership was transferred to associate " + args[0]);
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 
 				} else {
-					lib.sendMessage(p, lib.playerUnknown(args[0]));
+					lib.sendMessage(p, lib.invalidPlayer(args[0]));
 					return true;
 				}
 			} else {

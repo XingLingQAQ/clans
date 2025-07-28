@@ -4,12 +4,14 @@ import com.github.sanctum.clans.model.Clan;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.clans.model.Clearance;
 import com.github.sanctum.clans.model.RankRegistry;
+import com.github.sanctum.panther.annotation.Ordinal;
 import com.github.sanctum.panther.container.PantherCollection;
 import com.github.sanctum.panther.container.PantherSet;
 import com.github.sanctum.panther.file.MemorySpace;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +44,7 @@ public class DefaultRank implements Clan.Rank {
 			if (position != null) {
 				inheritance.add(position);
 			} else {
-				ClansAPI.getInstance().getPlugin().getLogger().info("- An uknown position named " + '"' + s + '"' + " was found within the inheritance of position " + getName());
+				ClansAPI.getInstance().getPlugin().getLogger().info("- An unknown position named " + '"' + s + '"' + " was found within the inheritance of position " + getName());
 			}
 		});
 	}

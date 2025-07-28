@@ -1,7 +1,7 @@
 package com.github.sanctum.clans.model;
 
 import com.github.sanctum.clans.ClanManager;
-import com.github.sanctum.clans.model.backend.ClanFileBackend;
+import com.github.sanctum.clans.model.backend.ClanBackend;
 import com.github.sanctum.clans.util.BukkitColor;
 import com.github.sanctum.clans.impl.DefaultClan;
 import com.github.sanctum.clans.impl.entity.ServerAssociate;
@@ -13,10 +13,7 @@ import com.github.sanctum.labyrinth.data.FileManager;
 import com.github.sanctum.labyrinth.data.LabyrinthUser;
 import com.github.sanctum.labyrinth.data.container.KeyedServiceManager;
 import com.github.sanctum.labyrinth.formatting.Message;
-import com.github.sanctum.labyrinth.formatting.string.CustomColor;
-import com.github.sanctum.labyrinth.formatting.string.FormattedString;
-import com.github.sanctum.labyrinth.formatting.string.GradientColor;
-import com.github.sanctum.labyrinth.formatting.string.RandomHex;
+import com.github.sanctum.labyrinth.formatting.string.*;
 import com.github.sanctum.labyrinth.interfacing.Identifiable;
 import com.github.sanctum.labyrinth.library.Mailer;
 import com.github.sanctum.labyrinth.task.TaskScheduler;
@@ -66,7 +63,7 @@ import org.jetbrains.annotations.Nullable;
 @DelegateDeserialization(DefaultClan.class)
 public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, InvasiveEntity, JsonAdapter<Clan>, Relatable<Clan> {
 
-	ClanFileBackend ACTION = new ClanFileBackend();
+	ClanBackend ACTION = new ClanBackend();
 
 	/**
 	 * Get the id of the clan stored within the object
@@ -125,12 +122,12 @@ public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, 
 	@Nullable Location getBase();
 
 	/**
-	 * @return
+	 * @return Get the permission handler for this clan.
 	 */
 	@NotNull ClearanceOverride getPermissiveHandle();
 
 	/**
-	 *
+	 * Reset the permissions of this clan to default.
 	 */
 	void resetPermissions();
 
@@ -140,6 +137,14 @@ public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, 
 	 * @return double value
 	 */
 	double getPower();
+
+
+	/**
+	 * NEW! Get the level of the clan. Calculated using the clans power.
+	 *
+	 * @return integer value.
+	 */
+	int getLevel();
 
 	/**
 	 * Creates a new associate using the target entity for this clan object.
@@ -209,7 +214,7 @@ public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, 
 	 * @return The desired serializable object.
 	 */
 	default <R> R getValue(String key) {
-		return getValue(TypeAdapter.get(), key);
+		return getValue(new EasyTypeAdapter<R>() {}, key);
 	}
 
 	/**
@@ -487,7 +492,27 @@ public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, 
 		return getMembers().stream().filter(predicate).findFirst().orElse(null);
 	}
 
-	@Note("This will be removed in the future. Its used temporarily in configuration.")
+	/**
+	 * Get a member by specification from the clan by their username.
+	 *
+	 * @param name The name to use.
+	 * @return The clan associate or null.
+	 */
+	default @Nullable Clan.Associate getMember(String name) {
+		return getMembers().stream().filter(p -> p.isValid() && p.getName().equals(name)).findFirst().orElse(null);
+	}
+
+	/**
+	 * Get a member by specification from the clan by their username.
+	 *
+	 * @param uuid The unique ID to use.
+	 * @return The clan associate or null.
+	 */
+	default @Nullable Clan.Associate getMember(UUID uuid) {
+		return getMembers().stream().filter(p -> p.isValid() && p.getId().equals(uuid)).findFirst().orElse(null);
+	}
+
+	@Note("This will be removed in the future. Its used temporarily in configuration as a custom placeholder example.")
 	default double getBalanceDouble() {
 		Bank bank = BanksAPI.getInstance().getBank(this);
 		return bank != null ? bank.getBalanceDouble() : 0;
@@ -511,11 +536,11 @@ public interface Clan extends Savable, ConfigurationSerializable, EntityHolder, 
 					.replace(":reservoir_progress:", Optional.ofNullable(Reservoir.get(clan)).map(r -> new ProgressBar().setProgress((int) r.getPower()).setGoal((int) r.getMaxPower()).setFullColor("&5&l").setPrefix(null).setSuffix(null).toString()).orElse(new ProgressBar().setProgress(0).setGoal(100).setBars(10).toString()))
 					.replace(":reservoir_power:", Optional.ofNullable(Reservoir.get(clan)).map(r -> r.getPower() + "").orElse(0 + ""))
 					.replace(":reservoir_power_max:", Optional.ofNullable(Reservoir.get(clan)).map(r -> r.getMaxPower() + "").orElse(10000 + ""))
-					.replace(":clan_logo:", clan.getLogo() == null ? "" : String.join("\n", clan.getLogo()))
+					.replace(":clan_logo:", clan.getLogo() == null ? "?" : String.join("\\n", clan.getLogo()))
 					.replace(":clan_color:", clan.getPalette().toString())
 					.replace(":clan_name_colored:", clan.getPalette().toString(clan.getName()))
 					.replace(":clan_nick_name:", clan.getNickname() != null ? clan.getNickname() : clan.getName())
-					.replace(":clan_nick_name_colored:", clan.getName())
+					.replace(":clan_nick_name_colored:", clan.getPalette().toString(clan.getNickname()))
 					.get();
 		};
 	}

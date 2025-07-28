@@ -28,7 +28,7 @@ public class StashCommand extends ClanSubCommand {
 				if (ClansAPI.getInstance().getClaimManager().isInClaim(p.getLocation())) {
 					Claim.Resident r = Claim.getResident(p);
 					if (!Clearance.MANAGE_STASH.test(associate)) {
-						Clan.ACTION.sendMessage(p, Clan.ACTION.noClearance());
+						Clan.ACTION.sendMessage(p, Clan.ACTION.notEnoughClearance());
 						return true;
 					}
 					if (!((Clan) r.getInfo().getCurrent().getHolder()).getId().toString().equals(clan.getId().toString())) {

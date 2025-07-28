@@ -1,7 +1,7 @@
 package com.github.sanctum.clans.model;
 
 import com.github.sanctum.clans.impl.DefaultDocketRegistry;
-import com.github.sanctum.clans.util.ReloadUtility;
+import com.github.sanctum.clans.ReloadHandler;
 import com.github.sanctum.clans.util.ClansLogoDelegation;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
 import com.github.sanctum.labyrinth.api.Service;
@@ -32,16 +32,17 @@ import com.github.sanctum.panther.file.Node;
 import com.github.sanctum.panther.util.HUID;
 import com.github.sanctum.panther.util.RandomObject;
 import com.github.sanctum.skulls.CustomHead;
-import com.github.sanctum.skulls.CustomHeadLoader;
-import com.github.sanctum.skulls.SkullType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.github.sanctum.skulls.SkullReferenceDocker;
+import com.github.sanctum.skulls.SkullReferenceType;
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -191,7 +192,7 @@ public enum GUI {
 		private final ClansAPI api = ClansAPI.getInstance();
 	private final ClanAddonRegistry addonQueue = ClanAddonRegistry.getInstance();
 	private final PrintManager printManager = LabyrinthProvider.getInstance().getLocalPrintManager();
-	private final ItemStack special = CustomHeadLoader.provide("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjMTVmNmZjZjJjZTk2M2VmNGNhNzFmMWE4Njg1YWRiOTdlYjc2OWUxZDExMTk0Y2JiZDJlOTY0YTg4OTc4YyJ9fX0=");
+	private final ItemStack special = SkullReferenceDocker.provide("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjMTVmNmZjZjJjZTk2M2VmNGNhNzFmMWE4Njg1YWRiOTdlYjc2OWUxZDExMTk0Y2JiZDJlOTY0YTg4OTc4YyJ9fX0=");
 
 	public Menu get(Player p) {
 		if (this == GUI.MAIN_MENU) {
@@ -232,7 +233,7 @@ public enum GUI {
 								}
 							}
 							i.addItem(border);
-							ListElement<String> rules = new ListElement<>(Constant.values(ClanGameRule.class, String.class));
+							ListElement<String> rules = new ListElement<>(Constant.values(ClanGameAttributes.class, String.class));
 							rules.setLimit(getLimit());
 							rules.setPopulate((flag, element) -> {
 								Material mat = new RandomObject<>(Arrays.stream(Material.values()).filter(material -> !material.name().contains("LEGACY")).collect(Collectors.toList())).get(flag);
@@ -240,21 +241,21 @@ public enum GUI {
 								Material finalMat = mat;
 								element.setElement(edit -> edit.setType(finalMat).setTitle("&6Edit &r" + flag).setLore(" ", "&eLeft-click to &aadd&e stuff", "&eRight-click to &cremove&e stuff", "&eShift-click to &3&loverwrite&e stuff").build()).setClick(c -> {
 									c.setCancelled(true);
-									ClanGameRule rule = ClanGameRule.of(printManager.getPrint(api.getLocalPrintKey()));
+									ClanGameAttributes rule = ClanGameAttributes.of(printManager.getPrint(api.getConfigKey()));
 									if (c.getClickType().isShiftClick()) {
-										InventoryElement inventory = rule.edit(ClanGameRule.Modification.SET, flag);
+										InventoryElement inventory = rule.edit(ClanGameAttributes.Modification.SET, flag);
 										if (inventory != null) {
 											inventory.open(c.getElement());
 										}
 
 									} else if (c.getClickType().isLeftClick()) {
-										InventoryElement inventory = rule.edit(ClanGameRule.Modification.ADD, flag);
+										InventoryElement inventory = rule.edit(ClanGameAttributes.Modification.ADD, flag);
 										if (inventory != null) {
 											inventory.open(c.getElement());
 										}
 
 									} else if (c.getClickType().isRightClick()) {
-										InventoryElement inventory = rule.edit(ClanGameRule.Modification.REMOVE, flag);
+										InventoryElement inventory = rule.edit(ClanGameAttributes.Modification.REMOVE, flag);
 										if (inventory != null) {
 											inventory.open(c.getElement());
 										}
@@ -446,7 +447,7 @@ public enum GUI {
 										it = new ItemStack(special);
 										title = title + "&b*";
 									} else {
-										it = Optional.ofNullable(CustomHead.Manager.get("Clan")).orElse(new ItemStack(Material.PAPER));
+										it = Optional.ofNullable(SkullReferenceUtility.getItem("Clan")).orElse(new ItemStack(Material.PAPER));
 									}
 									b.setItem(it);
 									b.setTitle(title);
@@ -523,7 +524,7 @@ public enum GUI {
 								c.setCancelled(true);
 								SETTINGS_ARENA.get().open(c.getElement());
 							}));
-							i.addItem(b -> b.setElement(Optional.ofNullable(CustomHead.Manager.get("Clan")).orElse(new ItemStack(Material.PAPER))).setElement(ed -> ed.setTitle("&7[&eClan List&7]").setLore("&bClick to view the entire &6clan roster").build()).setSlot(14).setClick(c -> {
+							i.addItem(b -> b.setElement(Optional.ofNullable(SkullReferenceUtility.getItem("Clan")).orElse(new ItemStack(Material.PAPER))).setElement(ed -> ed.setTitle("&7[&eClan List&7]").setLore("&bClick to view the entire &6clan roster").build()).setSlot(14).setClick(c -> {
 								c.setCancelled(true);
 								CLAN_ROSTER_SELECTION.get().open(c.getElement());
 							}));
@@ -687,17 +688,17 @@ public enum GUI {
 							i.addItem(b -> b.setElement(ed -> ed.setType(Material.BOOK).setTitle("&aEnglish").build()).setSlot(0).setClick(c -> {
 								c.setCancelled(true);
 								c.getElement().closeInventory();
-								ReloadUtility.reload(ReloadUtility.Lang.EN_US, c.getElement());
+								ReloadHandler.reload(ReloadHandler.Lang.EN_US, c.getElement());
 							}));
 							i.addItem(b -> b.setElement(ed -> ed.setType(Material.BOOK).setTitle("&bPortuguese").build()).setSlot(2).setClick(c -> {
 								c.setCancelled(true);
 								c.getElement().closeInventory();
-								ReloadUtility.reload(ReloadUtility.Lang.PT_BR, c.getElement());
+								ReloadHandler.reload(ReloadHandler.Lang.PT_BR, c.getElement());
 							}));
 							i.addItem(b -> b.setElement(ed -> ed.setType(Material.BOOK).setTitle("&eSpanish").build()).setSlot(4).setClick(c -> {
 								c.setCancelled(true);
 								c.getElement().closeInventory();
-								ReloadUtility.reload(ReloadUtility.Lang.ES_ES, c.getElement());
+								ReloadHandler.reload(ReloadHandler.Lang.ES_ES, c.getElement());
 							}));
 							i.addItem(b -> b.setElement(ed -> ed.setItem(getBackItem()).build()).setClick(c -> {
 								c.setCancelled(true);
@@ -775,7 +776,7 @@ public enum GUI {
 
 							FillerElement<?> filler = new FillerElement<>(i);
 							filler.add(ed -> {
-								ed.setElement(it -> it.setItem(SkullType.COMMAND_BLOCK.get()).setTitle(" ").build());
+								ed.setElement(it -> it.setItem(SkullReferenceType.COMMAND_BLOCK.getItem()).setTitle(" ").build());
 							});
 							i.addItem(border);
 							i.addItem(filler);
@@ -851,7 +852,7 @@ public enum GUI {
 
 							FillerElement<?> filler = new FillerElement<>(i);
 							filler.add(ed -> {
-								ed.setElement(it -> it.setItem(SkullType.COMMAND_BLOCK.get()).setTitle(" ").build());
+								ed.setElement(it -> it.setItem(SkullReferenceType.COMMAND_BLOCK.getItem()).setTitle(" ").build());
 							});
 							i.addItem(border);
 							i.addItem(filler);
@@ -916,7 +917,7 @@ public enum GUI {
 
 							FillerElement<?> filler = new FillerElement<>(i);
 							filler.add(ed -> {
-								ed.setElement(it -> it.setItem(SkullType.COMMAND_BLOCK.get()).setTitle(" ").build());
+								ed.setElement(it -> it.setItem(SkullReferenceType.COMMAND_BLOCK.getItem()).setTitle(" ").build());
 							});
 							i.addItem(border);
 							i.addItem(filler);
@@ -1018,7 +1019,7 @@ public enum GUI {
 										.setStock(paginated -> {
 											addBackground(paginated);
 											ListElement<Clan> list = new ListElement<>(associate.getClan().getRelation().getAlliance().get(Clan.class)).setLimit(7).setPopulate((c, element) -> {
-												element.setElement(edit -> edit.setTitle(c.getPalette() + (c.getNickname() != null ? c.getNickname() : c.getName())).setItem(Optional.ofNullable(CustomHead.Manager.get("Clan")).orElse(new ItemStack(Material.PAPER))).build());
+												element.setElement(edit -> edit.setTitle(c.getPalette() + (c.getNickname() != null ? c.getNickname() : c.getName())).setItem(Optional.ofNullable(SkullReferenceUtility.getItem("Clan")).orElse(new ItemStack(Material.PAPER))).build());
 												element.setClick(clickElement -> {
 													clickElement.setCancelled(true);
 													clickElement.setHotbarAllowed(false);
@@ -1028,8 +1029,8 @@ public enum GUI {
 
 												});
 											});
-											paginated.addItem(list).addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle("&5Next").build()).setType(ItemElement.ControlType.BUTTON_NEXT).setSlot(5))
-													.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_LEFT.get()).setTitle("&5Previous").build()).setType(ItemElement.ControlType.BUTTON_BACK).setSlot(3))
+											paginated.addItem(list).addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle("&5Next").build()).setType(ItemElement.ControlType.BUTTON_NEXT).setSlot(5))
+													.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_LEFT.getItem()).setTitle("&5Previous").build()).setType(ItemElement.ControlType.BUTTON_BACK).setSlot(3))
 													.addItem(b -> b.setElement(getBackItem()).setSlot(4).setClick(clickElement -> {
 														Player p = clickElement.getElement();
 														clickElement.setCancelled(true);
@@ -1049,7 +1050,7 @@ public enum GUI {
 										.setStock(paginated -> {
 											addBackground(paginated);
 											ListElement<Clan> list = new ListElement<>(associate.getClan().getRelation().getRivalry().get(Clan.class)).setLimit(7).setPopulate((c, element) -> {
-												element.setElement(edit -> edit.setTitle(c.getPalette() + (c.getNickname() != null ? c.getNickname() : c.getName())).setItem(Optional.ofNullable(CustomHead.Manager.get("Clan")).orElse(new ItemStack(Material.PAPER))).build());
+												element.setElement(edit -> edit.setTitle(c.getPalette() + (c.getNickname() != null ? c.getNickname() : c.getName())).setItem(Optional.ofNullable(SkullReferenceUtility.getItem("Clan")).orElse(new ItemStack(Material.PAPER))).build());
 												element.setClick(clickElement -> {
 													clickElement.setCancelled(true);
 													clickElement.setHotbarAllowed(false);
@@ -1059,8 +1060,8 @@ public enum GUI {
 
 												});
 											});
-											paginated.addItem(list).addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle("&5Next").build()).setType(ItemElement.ControlType.BUTTON_NEXT).setSlot(5))
-													.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_LEFT.get()).setTitle("&5Previous").build()).setType(ItemElement.ControlType.BUTTON_BACK).setSlot(3))
+											paginated.addItem(list).addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle("&5Next").build()).setType(ItemElement.ControlType.BUTTON_NEXT).setSlot(5))
+													.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_LEFT.getItem()).setTitle("&5Previous").build()).setType(ItemElement.ControlType.BUTTON_BACK).setSlot(3))
 													.addItem(b -> b.setElement(getBackItem()).setSlot(4).setClick(clickElement -> {
 														Player p = clickElement.getElement();
 														clickElement.setCancelled(true);
@@ -1076,7 +1077,7 @@ public enum GUI {
 										.setTitle("&a&lAlly +")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1097,7 +1098,7 @@ public enum GUI {
 										.setTitle("&c&lAlly -")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1118,7 +1119,7 @@ public enum GUI {
 										.setTitle("&c&lEnemy +")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1139,7 +1140,7 @@ public enum GUI {
 										.setTitle("&e&lEnemy -")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1203,7 +1204,7 @@ public enum GUI {
 												.setTitle("&2Type a name")
 												.setSize(Menu.Rows.ONE)
 												.setHost(api.getPlugin())
-												.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+												.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 													c.setCancelled(true);
 													c.setHotbarAllowed(false);
 												}))).join()
@@ -1227,7 +1228,7 @@ public enum GUI {
 												.setTitle("&2Type a bio")
 												.setSize(Menu.Rows.ONE)
 												.setHost(api.getPlugin())
-												.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+												.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 													c.setCancelled(true);
 													c.setHotbarAllowed(false);
 												}))).join()
@@ -1291,7 +1292,7 @@ public enum GUI {
 								}
 							}
 							i.addItem(border);
-							i.addItem(b -> b.setElement(it -> it.setItem(associate.getHead() != null ? associate.getHead() : SkullType.PLAYER.get()).setFlags(ItemFlag.HIDE_ENCHANTS).addEnchantment(Enchantment.ARROW_DAMAGE, 100)
+							i.addItem(b -> b.setElement(it -> it.setItem(associate.getHead() != null ? associate.getHead() : SkullReferenceType.PLAYER.getItem()).setFlags(ItemFlag.HIDE_ENCHANTS).addEnchantment(Enchantment.ARROW_DAMAGE, 100)
 									.setTitle("&cGo back.").build()).setSlot(13).setClick(click -> {
 								click.setHotbarAllowed(false);
 								click.setCancelled(true);
@@ -1304,7 +1305,7 @@ public enum GUI {
 										.setTitle("&2Type a bio")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1324,7 +1325,7 @@ public enum GUI {
 										.setTitle("&2Type a name")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1344,7 +1345,7 @@ public enum GUI {
 										.setTitle("&2Type a clan name")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1364,7 +1365,7 @@ public enum GUI {
 														MEMBER_INFO.get(newAssociate).open(c.getElement());
 													}
 												} else {
-													Clan.ACTION.sendMessage(c.getElement(), Clan.ACTION.clanUnknown(c.getParent().getName()));
+													Clan.ACTION.sendMessage(c.getElement(), Clan.ACTION.invalidClan(c.getParent().getName()));
 												}
 											}
 
@@ -1422,7 +1423,7 @@ public enum GUI {
 										.setTitle("&a&lDeposit +")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1445,7 +1446,7 @@ public enum GUI {
 										.setTitle("&c&lWithdraw -")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(printable -> printable.addItem(b -> b.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1505,7 +1506,7 @@ public enum GUI {
 										.setTitle("&2Type a title")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1526,7 +1527,7 @@ public enum GUI {
 										.setTitle("&2Type a title")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1547,7 +1548,7 @@ public enum GUI {
 										.setTitle("&2Type a title")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1568,7 +1569,7 @@ public enum GUI {
 										.setTitle("&2Type a title")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1683,7 +1684,7 @@ public enum GUI {
 										.setTitle("&2Type a bio")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1712,7 +1713,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1755,7 +1756,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1780,7 +1781,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1805,7 +1806,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1830,7 +1831,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1855,7 +1856,7 @@ public enum GUI {
 										.setTitle("&2Type an amount")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1879,7 +1880,7 @@ public enum GUI {
 										.setTitle("&2Type a new tag")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1900,7 +1901,7 @@ public enum GUI {
 										.setTitle("&2Type a description")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1921,7 +1922,7 @@ public enum GUI {
 										.setTitle("&2Type a color")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle(" ").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle(" ").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -1951,7 +1952,7 @@ public enum GUI {
 										.setTitle("&01 for &aYES &02 for &cNO")
 										.setSize(Menu.Rows.ONE)
 										.setHost(api.getPlugin())
-										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullType.ARROW_BLUE_RIGHT.get()).setTitle("0").build()).setSlot(0).setClick(c -> {
+										.setStock(inv -> inv.addItem(be -> be.setElement(it -> it.setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).setTitle("0").build()).setSlot(0).setClick(c -> {
 											c.setCancelled(true);
 											c.setHotbarAllowed(false);
 										}))).join()
@@ -2206,7 +2207,7 @@ public enum GUI {
 	}
 
 	Menu.Rows getSize() {
-		return Menu.Rows.valueOf(ClansAPI.getDataInstance().getMessageString("default-menu-size"));
+		return Menu.Rows.valueOf(ClansAPI.getDataInstance().getMessageString("menu.default-menu-size"));
 	}
 
 	List<String> color(String... text) {
@@ -2218,7 +2219,7 @@ public enum GUI {
 	}
 
 	ItemStack getRightItem() {
-		ItemStack right = new Item.Edit(Material.DIRT).setItem(SkullType.ARROW_BLUE_RIGHT.get()).build();
+		ItemStack right = new Item.Edit(Material.DIRT).setItem(SkullReferenceType.ARROW_BLUE_RIGHT.getItem()).build();
 		ItemMeta meta = right.getItemMeta();
 		meta.setDisplayName(StringUtils.use("&aNext.").translate());
 		right.setItemMeta(meta);
@@ -2226,7 +2227,7 @@ public enum GUI {
 	}
 
 	ItemStack getLeftItem() {
-		ItemStack left = new Item.Edit(Material.DIRT).setItem(SkullType.ARROW_BLUE_LEFT.get()).build();
+		ItemStack left = new Item.Edit(Material.DIRT).setItem(SkullReferenceType.ARROW_BLUE_LEFT.getItem()).build();
 		ItemMeta meta = left.getItemMeta();
 		meta.setDisplayName(StringUtils.use("&aPrevious.").translate());
 		left.setItemMeta(meta);
@@ -2234,7 +2235,7 @@ public enum GUI {
 	}
 
 	ItemStack getBackItem() {
-		ItemStack back = new Item.Edit(Material.DIRT).setItem(SkullType.ARROW_BLACK_DOWN.get()).build();
+		ItemStack back = new Item.Edit(Material.DIRT).setItem(SkullReferenceType.ARROW_BLACK_DOWN.getItem()).build();
 		;
 		ItemMeta meta = back.getItemMeta();
 		meta.setDisplayName(StringUtils.use("&cBack.").translate());

@@ -9,11 +9,9 @@ repositories {
             includeGroup("com.github.Revxrsal.Lamp")
         }
     }
-    mavenCentral()
-    maven ("https://maven.enginehub.org/repo/")
 }
 
 // Define versions as extra properties
 val enterpriseVersion by extra("1.5")
-val labyrinthVersion by extra("master-SNAPSHOT")
-val pantherVersion by extra("1.0.4-SNAPSHOT")
+val labyrinthVersion by extra("6dcdb2689d")
+val pantherVersion by extra("c307f23729")

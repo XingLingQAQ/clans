@@ -48,7 +48,7 @@ public final class ClaimManager {
 		this.residentManager = new ResidentManager(this);
 		this.flagManager = new FlagManager(this);
 		fixRegionsFile();
-		this.regions = ClansAPI.getInstance().getFileList().get("regions", "Configuration/Data", JavaPlugin.getPlugin(ClansJavaPlugin.class).TYPE);
+		this.regions = ClansAPI.getInstance().getFileList().get("regions", "Configuration/Data", JavaPlugin.getPlugin(ClansJavaPlugin.class).DATATYPE);
 		regions.getRoot().reload();
 		ClanVentBus.subscribe(TimerEvent.class, Vent.Priority.HIGH, (e, subscription) -> {
 			if (e.isAsynchronous()) return;

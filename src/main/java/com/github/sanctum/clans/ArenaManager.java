@@ -100,7 +100,7 @@ public final class ArenaManager implements Iterable<Arena> {
 					private final long time;
 
 					{
-						this.time = abv(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getLocalPrintKey()).getNumber("war_start_time").intValue());
+						this.time = abv(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getConfigKey()).getNumber("war_start_time").intValue());
 					}
 
 					@Override
@@ -121,7 +121,7 @@ public final class ArenaManager implements Iterable<Arena> {
 					private final String id;
 
 					{
-						this.time = abv(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getLocalPrintKey()).getNumber("war_start_time").intValue());
+						this.time = abv(LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(ClansAPI.getInstance().getConfigKey()).getNumber("war_start_time").intValue());
 						this.id = "war-" + free.getId() + "-start";
 					}
 

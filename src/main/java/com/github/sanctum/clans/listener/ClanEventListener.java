@@ -379,6 +379,7 @@ public class ClanEventListener implements Listener {
                     if (line_1.getText() != null) {
                         line_1_msg.then(line_1.getText());
                         if (!line_1.getHover().isEmpty()) {
+
                             line_1.getHover().forEach(s -> {
                                 line_1_msg.hover(s.replace("{0}", c.getName() + idMode)
                                         .replace("{1}", c.getDescription())
@@ -552,7 +553,7 @@ public class ClanEventListener implements Listener {
         if (test != null) {
             long msec = TimeUnit.MINUTES.toSeconds(r.getMinutes());
             long sec = r.getSeconds();
-            if ((msec + sec) >= LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(e.getApi().getLocalPrintKey()).getNumber("war_start_time").intValue()) {
+            if ((msec + sec) >= LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(e.getApi().getConfigKey()).getNumber("war_start_time").intValue()) {
                 e.start();
                 LabyrinthProvider.getInstance().remove(test);
                 e.setCancelled(true);
@@ -655,7 +656,7 @@ public class ClanEventListener implements Listener {
     public void onClanCreate(PlayerCreateClanEvent event) {
         if (event.getPlayer() != null) {
             Player p = event.getPlayer();
-            if (Clan.ACTION.getAllClanNames().size() >= LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(event.getApi().getLocalPrintKey()).getNumber(ClanGameRule.MAX_CLANS).intValue()) {
+            if (Clan.ACTION.getAllClanNames().size() >= LabyrinthProvider.getInstance().getLocalPrintManager().getPrint(event.getApi().getConfigKey()).getNumber(ClanGameAttributes.MAX_CLANS).intValue()) {
                 event.getUtil().sendMessage(p, ClansAPI.getDataInstance().getMessageResponse("max-clans"));
                 event.setCancelled(true);
                 return;

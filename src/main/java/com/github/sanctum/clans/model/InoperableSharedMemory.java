@@ -10,5 +10,5 @@ abstract class InoperableSharedMemory {
 	static final PantherCollection<ChatChannel.Filter> FILTERS = new PantherSet<>();
 	static final PantherCollection<QnA> QNA = new PantherSet<>();
 	static final PantherMap<String, InvasiveEntity> ENTITY_MAP = new PantherEntryMap<>();
-	static final PantherMap<FingerPrint, ClanGameRule> SCANNER_MAP = new PantherEntryMap<>();
+	static final PantherMap<FingerPrint, ClanGameAttributes> GAME_ATTRIBUTE = new PantherEntryMap<>();
 }

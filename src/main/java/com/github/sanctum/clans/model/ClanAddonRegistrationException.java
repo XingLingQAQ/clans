@@ -1,6 +1,7 @@
 package com.github.sanctum.clans.model;
 
 import com.github.sanctum.clans.ClansJavaPlugin;
+import com.github.sanctum.clans.util.StartProcedure;
 import com.github.sanctum.labyrinth.data.FileList;
 import com.github.sanctum.labyrinth.task.Procedure;
 import java.io.File;
@@ -14,25 +15,25 @@ public class ClanAddonRegistrationException extends ClanError {
 		super(msg);
 	}
 
-	public static Procedure<ClansJavaPlugin> getLoadingProcedure() {
-		return Procedure.request(() -> ClansJavaPlugin.class).next(instance -> {
-			File file = FileList.search(instance).get("dummy", "Addons").getRoot().getParent().getParentFile();
+	public static Procedure<StartProcedure> getLoadingProcedure() {
+		return Procedure.request(() -> StartProcedure.class).next(instance -> {
+			File file = FileList.search(instance.getPlugin()).get("dummy", "Addons").getRoot().getParent().getParentFile();
 			int amount = 0;
 			for (File f : file.listFiles()) {
 				if (f.isDirectory()) continue;
 				try {
 					Clan.Addon addon = new ClanAddonClassLoader(f).getMainClass();
 					ClanAddonRegistry.getInstance().load(addon);
-					instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-					instance.getLogger().info("- Injected: " + addon.getName() + " v" + addon.getVersion());
-					instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+					instance.sendBorder();
+					instance.getPlugin().getLogger().info("- Injected: " + addon.getName() + " v" + addon.getVersion());
+					instance.sendBorder();
 					amount++;
 				} catch (IOException | InvalidAddonException | ClanAddonRegistrationException |
 						 ClanAddonDependencyError e) {
 					e.printStackTrace();
 				}
 			}
-			instance.getLogger().info("- (" + amount + ") clan addon(s) were injected into cache.");
+			instance.getPlugin().getLogger().info("- (" + amount + ") clan addon(s) were injected into cache.");
 		});
 	}
 

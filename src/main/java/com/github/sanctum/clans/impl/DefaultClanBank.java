@@ -28,7 +28,7 @@ public class DefaultClanBank implements Clan.Bank {
         if (getBackend().readIsDisabled(getClan()).join()) throw new DisabledClanBankError(clanId.toString());
         if (amount.compareTo(BigDecimal.ZERO) < 0) throw new IllegalArgumentException("amount cannot be negative");
         boolean success = true;
-        if (entity instanceof Clan.Associate && ((Clan.Associate) entity).isPlayer()) {
+        if (entity instanceof Clan.Associate && entity.isPlayer()) {
             final Player p = ((Clan.Associate) entity).getAsOfflinePlayer().getPlayer();
             //noinspection DataFlowIssue
             success = EconomyProvision.getInstance().has(amount, p, p.getWorld().getName()).orElse(false);
@@ -79,11 +79,7 @@ public class DefaultClanBank implements Clan.Bank {
 
     @Override
     public @NotNull ClanBankLog getLog() {
-        return getBackend().readTransactions(getClan()).thenApply(transactions -> {
-            final ClanBankLog log = new ClanBankLog();
-            log.getTransactions().addAll(transactions);
-            return log;
-        }).join();
+        return getBackend().readTransactions(getClan()).thenApply(ClanBankLog::new).join();
     }
 
     @Override

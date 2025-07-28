@@ -96,7 +96,7 @@ public class CommandMembers extends ClanSubCommand {
 						members.limit(lib.menuSize());
 						members.send(1);
 					} else {
-						lib.sendMessage(p, lib.pageUnknown() + ", " + lib.clanUnknown(args[0]));
+						lib.sendMessage(p, lib.pageUnknown() + ", " + lib.invalidClan(args[0]));
 					}
 				}
 			} else {

@@ -12,10 +12,10 @@ import com.github.sanctum.clans.impl.DefaultDocketRegistry;
 import com.github.sanctum.clans.event.TimerEvent;
 import com.github.sanctum.clans.event.claim.RaidShieldEvent;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
-import com.github.sanctum.labyrinth.data.EconomyProvision;
 import com.github.sanctum.labyrinth.data.FileList;
 import com.github.sanctum.labyrinth.data.FileManager;
 import com.github.sanctum.labyrinth.data.Registry;
+import com.github.sanctum.labyrinth.data.reload.PrintManager;
 import com.github.sanctum.labyrinth.data.service.PlayerSearch;
 import com.github.sanctum.labyrinth.formatting.FancyMessage;
 import com.github.sanctum.labyrinth.formatting.string.FormattedString;
@@ -30,9 +30,9 @@ import com.github.sanctum.panther.annotation.AnnotationDiscovery;
 import com.github.sanctum.panther.annotation.Ordinal;
 import com.github.sanctum.panther.event.VentMap;
 import com.github.sanctum.panther.file.Configurable;
-import com.github.sanctum.panther.placeholder.PlaceholderRegistration;
 import com.github.sanctum.panther.util.RandomID;
 import com.github.sanctum.skulls.CustomHead;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,11 +46,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.github.sanctum.skulls.InvalidSkullReferenceException;
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import com.google.common.base.Stopwatch;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -70,8 +70,14 @@ public final class StartProcedure {
 		Metrics.register(instance, 10461, metrics);
 	}
 
-	void sendBorder() {
-		instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+	public ClansJavaPlugin getPlugin() {
+		return instance;
+	}
+
+	public void sendBorder() {
+		if (LabyrinthProvider.getInstance().isLegacy()) {
+			instance.getLogger().info("==================================================================================");
+		} else instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 	}
 
 	String replaceDevKey(String key, int id) {
@@ -106,33 +112,41 @@ public final class StartProcedure {
 			System.setProperty("RELOAD", "FALSE");
 		}
 		// Pre-handle game rule injection.
-		LabyrinthProvider.getInstance().getLocalPrintManager().register(() -> {
+		PrintManager printManager = LabyrinthProvider.getInstance().getLocalPrintManager();
+		//printManager.register(new ConfigurationFileBackend(instance.getConfigKey(), instance.dataManager.getConfig()));
+		//printManager.register(new ConfigurationFileBackend(instance.getMessagesKey(), instance.dataManager.getMessages()));
+		printManager.register(() -> {
 			Map<String, Object> map = new HashMap<>();
 			DataManager manager = ClansAPI.getDataInstance();
 			manager.getConfig().getRoot().reload();
 			manager.getMessages().getRoot().reload();
-			map.put(ClanGameRule.WAR_START_TIME, manager.getConfigInt("Clans.arena.start-wait"));
-			map.put(ClanGameRule.BLOCKED_WAR_COMMANDS, manager.getConfig().getRoot().getStringList("Clans.arena.blocked-commands"));
-			map.put(ClanGameRule.MAX_CLANS, manager.getConfigInt("Clans.max-clans"));
-			map.put(ClanGameRule.MAX_POWER, manager.getConfig().getRoot().getNode("Clans.max-power").toPrimitive().getDouble());
-			map.put(ClanGameRule.DEFAULT_WAR_MODE, manager.getConfigString("Clans.mode-change.default"));
-			map.put(ClanGameRule.CLAN_INFO_SIMPLE, manager.getMessages().getRoot().getStringList("info-simple"));
-			map.put(ClanGameRule.CLAN_INFO_SIMPLE_OTHER, manager.getMessages().getRoot().getStringList("info-simple-other"));
+			map.put(ClanGameAttributes.WAR_START_TIME, manager.getConfigInt("Clans.arena.start-wait"));
+			map.put(ClanGameAttributes.BLOCKED_WAR_COMMANDS, manager.getConfig().getRoot().getStringList("Clans.arena.blocked-commands"));
+			map.put(ClanGameAttributes.MAX_CLANS, manager.getConfigInt("Clans.max-clans"));
+			map.put(ClanGameAttributes.MAX_POWER, manager.getConfig().getRoot().getNode("Clans.max-power").toPrimitive().getDouble());
+			map.put(ClanGameAttributes.DEFAULT_WAR_MODE, manager.getConfigString("Clans.mode-change.default"));
+			map.put(ClanGameAttributes.CLAN_INFO_SIMPLE, manager.getMessages().getRoot().getStringList("info-simple"));
+			map.put(ClanGameAttributes.CLAN_INFO_SIMPLE_OTHER, manager.getMessages().getRoot().getStringList("info-simple-other"));
 			map.putAll(manager.getResetTable().values());
 			manager.getResetTable().clear();
 			return map;
-		}, instance.getLocalPrintKey());
+		}, instance.getConfigKey());
 	}
 
 	@Ordinal(1)
 	void a() {
-		instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		sendBorder();
 		instance.getLogger().info("- Clans. Loading plugin information...");
-		instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-		for (String ch : getLogo()) {
-			instance.getLogger().info("- " + ch);
+		sendBorder();
+		if (LabyrinthProvider.getInstance().isLegacy()) {
+			instance.getLogger().info("User ID: " + replaceDevKey(instance.USER_ID, 0));
+			instance.getLogger().info("UID: " + replaceDevKey(instance.NONCE, Integer.parseInt(new RandomID(5, "0123456789").generate())));
+		} else {
+			for (String ch : getLogo()) {
+				instance.getLogger().info("- " + ch);
+			}
 		}
-		instance.getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		sendBorder();
 	}
 
 	@Ordinal(2)
@@ -149,7 +163,8 @@ public final class StartProcedure {
 				instance.getCommandManager().register(cmd);
 			}
 		});
-		ClanAddonRegistrationException.getLoadingProcedure().run(instance).deploy();
+
+		ClanAddonRegistrationException.getLoadingProcedure().run(this);
 	}
 
 	@Ordinal(4)
@@ -158,7 +173,7 @@ public final class StartProcedure {
 		instance.getLogger().info("- Cleaning misc files.");
 		final FileList fileList = instance.getFileList();
 		for (String id : Clan.ACTION.getAllClanIDs()) {
-			FileManager clan = fileList.get(id, "Clans", instance.TYPE);
+			FileManager clan = fileList.get(id, "Clans", instance.DATATYPE);
 			FileManager clanClaims = instance.getClaimManager().getFile();
 			clanClaims.getRoot().getNode(id).delete();
 			if (clan.read(c -> !c.getNode("name").toPrimitive().isString())) {
@@ -178,19 +193,6 @@ public final class StartProcedure {
 
 	@Ordinal(6)
 	void f() {
-		if (!softBail) {
-			TaskScheduler.of(() -> {
-				instance.getLogger().info("- Checking for placeholders.");
-				if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-					new PapiPlaceholders(instance).register();
-					new PantherPlaceholders(instance).register();
-					instance.getLogger().info("- PlaceholderAPI found! Loading clans placeholders");
-				} else {
-					PlaceholderRegistration.getInstance().registerTranslation(new PantherPlaceholders(instance));
-					instance.getLogger().info("- PlaceholderAPI not found, loading labyrinth provision.");
-				}
-			}).scheduleLater(38);
-		}
 	}
 
 	@Ordinal(7)
@@ -230,18 +232,6 @@ public final class StartProcedure {
 	void i() {
 		ClanAddonRegistry queue = ClanAddonRegistry.getInstance();
 		queue.load(instance, "com.github.sanctum.clans.model.addon", value -> !new FormattedString(value).contains(DynmapAddon.class.getSimpleName(), BountyAddon.class.getSimpleName()));
-		TaskScheduler.of(() -> {
-			if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
-				for (String s : queue.register(DynmapAddon.class).read()) {
-					instance.getLogger().info(s);
-				}
-			}
-			if (EconomyProvision.getInstance().isValid()) {
-				for (String s : queue.register(BountyAddon.class).read()) {
-					instance.getLogger().info(s);
-				}
-			}
-		}).scheduleLater(160);
 		instance.getLogger().info("- Found (" + queue.get().size() + ") clan addon(s)");
 		queue.get().forEach(queue::bump);
 		for (Clan.Addon e : queue.get().stream().sorted(Comparator.comparingInt(value -> value.getContext().getLevel())).collect(Collectors.toCollection(LinkedHashSet::new))) {
@@ -258,14 +248,14 @@ public final class StartProcedure {
 					instance.getLogger().info("- Description: " + e.getDescription());
 					instance.getLogger().info("- Persistent: (" + e.isPersistent() + ")");
 					sendBorder();
-					instance.getLogger().info("- Listeners: (" + e.getContext().getListeners().length + ")");
+					instance.getLogger().info("  - Listeners: (" + e.getContext().getListeners().length + ")");
 					for (Listener listener : e.getContext().getListeners()) {
 						boolean registered = HandlerList.getRegisteredListeners(instance).stream().anyMatch(r -> r.getListener().equals(listener));
 						if (!registered) {
-							instance.getLogger().info("- [" + e.getName() + "] (+1) Listener " + listener.getClass().getSimpleName() + " loaded.");
+							instance.getLogger().info("    - [" + e.getName() + "] (+1) Listener " + listener.getClass().getSimpleName() + " loaded.");
 							LabyrinthProvider.getInstance().getEventMap().subscribe(instance, listener);
 						} else {
-							instance.getLogger().info("- [" + e.getName() + "] (-1) Listener " + listener.getClass().getSimpleName() + " already loaded. Skipping.");
+							instance.getLogger().info("    - [" + e.getName() + "] (-1) Listener " + listener.getClass().getSimpleName() + " already loaded. Skipping.");
 						}
 					}
 				} catch (NoClassDefFoundError | NoSuchMethodError ex) {
@@ -279,7 +269,7 @@ public final class StartProcedure {
 				instance.getLogger().info("- Description: " + e.getDescription());
 				instance.getLogger().info("- Persistent: (" + e.isPersistent() + ")");
 				sendBorder();
-				instance.getLogger().info("- Listeners: (" + e.getContext().getListeners().length + ")");
+				instance.getLogger().info("  - Listeners: (" + e.getContext().getListeners().length + ")");
 				AnnotationDiscovery<Ordinal, Clan.Addon> discovery = AnnotationDiscovery.of(Ordinal.class, Clan.Addon.class);
 				discovery.filter(method -> method.getName().equals("remove"), true);
 				discovery.ifPresent((ordinal, method) -> {
@@ -290,7 +280,7 @@ public final class StartProcedure {
 					}
 				});
 				for (Listener l : e.getContext().getListeners()) {
-					instance.getLogger().info("- [" + l.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
+					instance.getLogger().info("    - [" + l.getClass().getSimpleName() + "] (+1) Listener failed to load due to no persistence.");
 				}
 			}
 
@@ -371,6 +361,7 @@ public final class StartProcedure {
 	}
 
 	@Ordinal(14)
+	// INFO
 	void n() {
 		ChatChannel.GLOBAL.register(context -> {
 			String test = context;
@@ -474,10 +465,14 @@ public final class StartProcedure {
 			instance.getFileList().copy("config/heads.json", man);
 			man.getRoot().reload();
 		}
-		CustomHead.Manager.newLoader(man.getRoot())
-				.look("My_heads")
-				.complete();
-	}
+        try {
+            SkullReferenceUtility.newLoader(man.getRoot())
+                    .load("My_heads")
+                    .complete();
+        } catch (InvalidSkullReferenceException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	@Ordinal(17)
 	void q() {
@@ -492,7 +487,7 @@ public final class StartProcedure {
 		MemoryDocket<String> headDocket = new MemoryDocket<>(ClansAPI.getDataInstance().getMessages().getRoot().getNode("menu.head-library"));
 		headDocket.setDataConverter((s, h) -> new FormattedString(s).replace("%head_name%", h).get());
 		headDocket.setNamePlaceholder(":not_supported:");
-		headDocket.setList(() -> CustomHead.Manager.getHeads().stream().map(CustomHead::name).collect(Collectors.toList()));
+		headDocket.setList(() -> SkullReferenceUtility.getHeads().stream().map(CustomHead::getName).collect(Collectors.toList()));
 		headDocket.load();
 		DefaultDocketRegistry.load(headDocket.toMenu().getKey().orElseThrow(RuntimeException::new), headDocket);
 		MemoryDocket<Clan> rosterTopDocket = Docket.newInstance(ClansAPI.getDataInstance().getMessages().getRoot().getNode("menu.roster-top"));

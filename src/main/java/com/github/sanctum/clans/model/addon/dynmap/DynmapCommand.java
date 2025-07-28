@@ -111,7 +111,7 @@ public class DynmapCommand extends ClanSubCommand {
 							lib.sendMessage(p, lib.alreadyWild());
 						}
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, lib.notInClan());
@@ -151,7 +151,7 @@ public class DynmapCommand extends ClanSubCommand {
 							lib.sendMessage(p, "&a&oClaim mapping task completed in &f" + second + "&a&os");
 							lib.sendMessage(p, "&fInfo: &6" + response);
 						} else {
-							lib.sendMessage(p, lib.noClearance());
+							lib.sendMessage(p, lib.notEnoughClearance());
 							return true;
 						}
 					}

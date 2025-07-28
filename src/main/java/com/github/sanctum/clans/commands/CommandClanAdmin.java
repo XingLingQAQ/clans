@@ -6,7 +6,7 @@ import com.github.sanctum.clans.model.addon.VaultsAddon;
 import com.github.sanctum.clans.ClanManager;
 import com.github.sanctum.clans.model.*;
 import com.github.sanctum.clans.model.Arena;
-import com.github.sanctum.clans.util.ReloadUtility;
+import com.github.sanctum.clans.ReloadHandler;
 import com.github.sanctum.clans.util.StringLibrary;
 import com.github.sanctum.labyrinth.data.FileManager;
 import com.github.sanctum.labyrinth.formatting.pagination.EasyPagination;
@@ -72,7 +72,7 @@ public class CommandClanAdmin extends Command {
 			if (id != null) {
 				Clan toJoin = manager.getClan(id);
 				Clan.ACTION.join(uuid, clanName, toJoin.getPassword() != null ? toJoin.getPassword() : null, false).deploy();
-				return Optional.ofNullable(toJoin.getMember(m -> m.getId().equals(uuid)));
+				return Optional.ofNullable(toJoin.getMember(uuid));
 			}
 		}
 		return Optional.empty();
@@ -288,7 +288,7 @@ public class CommandClanAdmin extends Command {
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("reload")) {
 					ClansAPI.getInstance().getPlugin().getLogger().info("&7|&e) &fAlternative usage : /" + commandLabel + " reload <fileName>");
-					ReloadUtility.reload();
+					ReloadHandler.reload();
 					ClansAPI.getInstance().getPlugin().getLogger().info("&aPlugin reloaded!");
 					return true;
 				}
@@ -377,7 +377,7 @@ public class CommandClanAdmin extends Command {
 			}
 			if (args0.equalsIgnoreCase("reload")) {
 				lib.sendMessage(p, "&7|&e) &fAlternative usage : /" + commandLabel + " reload <fileName>");
-				ReloadUtility.reload();
+				ReloadHandler.reload();
 				lib.sendMessage(p, "&aPlugin reloaded!");
 				return true;
 			}
@@ -489,7 +489,7 @@ public class CommandClanAdmin extends Command {
 						}
 					}
 				} else {
-					lib.sendMessage(p, lib.clanUnknown(args1));
+					lib.sendMessage(p, lib.invalidClan(args1));
 					return true;
 				}
 			}
@@ -526,11 +526,22 @@ public class CommandClanAdmin extends Command {
 							lib.sendMessage(p, "They're not in a clan!");
 						}
 					} else {
-						lib.sendMessage(p, lib.clanUnknown(args1));
+						lib.sendMessage(p, lib.invalidClan(args1));
 					}
 				}
 			}
 			if (args0.equalsIgnoreCase("purge")) {
+				if (args1.equalsIgnoreCase("all")) {
+					int amount = 0;
+					for (Clan target : ClansAPI.getInstance().getClanManager().getClans()) {
+						for (String data : target.getKeys()) {
+							target.removeValue(data);
+							amount++;
+						}
+					}
+					lib.sendMessage(p, "&3&l" + amount + " &aobject(s) were successfully removed.");
+					return true;
+				}
 				if (ClansAPI.getInstance().getClanManager().getClanID(args1) != null) {
 					Clan target = ClansAPI.getInstance().getClanManager().getClan(ClansAPI.getInstance().getClanManager().getClanID(args1));
 					int amount = 0;
@@ -540,20 +551,7 @@ public class CommandClanAdmin extends Command {
 					}
 					lib.sendMessage(p, "&3&l" + amount + " &aobject(s) were successfully removed.");
 				} else {
-
-					if (args1.equalsIgnoreCase("all")) {
-						int amount = 0;
-						for (Clan target : ClansAPI.getInstance().getClanManager().getClans()) {
-							for (String data : target.getKeys()) {
-								target.removeValue(data);
-								amount++;
-							}
-						}
-						lib.sendMessage(p, "&3&l" + amount + " &aobject(s) were successfully removed.");
-						return true;
-					}
-
-					lib.sendMessage(p, lib.clanUnknown(args1));
+					lib.sendMessage(p, lib.invalidClan(args1));
 					return true;
 				}
 			}
@@ -568,7 +566,7 @@ public class CommandClanAdmin extends Command {
 						}
 					}
 				} else {
-					lib.sendMessage(p, lib.clanUnknown(args1));
+					lib.sendMessage(p, lib.invalidClan(args1));
 				}
 				return true;
 			}
@@ -578,7 +576,7 @@ public class CommandClanAdmin extends Command {
 			}
 			if (args0.equalsIgnoreCase("kick")) {
 				if (Clan.ACTION.getId(args1).deploy() == null) {
-					lib.sendMessage(p, lib.playerUnknown(args1));
+					lib.sendMessage(p, lib.invalidPlayer(args1));
 					return true;
 				}
 				UUID target = Clan.ACTION.getId(args1).deploy();
@@ -677,7 +675,7 @@ public class CommandClanAdmin extends Command {
 							lib.sendMessage(p, "&aYou claimed this land for clan &r" + clan.getName());
 						}
 					} else {
-						lib.sendMessage(p, lib.clanUnknown(args2));
+						lib.sendMessage(p, lib.invalidClan(args2));
 					}
 				}
 				if (args1.equalsIgnoreCase("surrounding")) {
@@ -688,14 +686,14 @@ public class CommandClanAdmin extends Command {
 						Claim.ACTION.getSurroundingChunks(p.getLocation().getChunk(), -1, 0, 1).deploy().forEach(clan::newClaim);
 						lib.sendMessage(p, "&aYou claimed this land for clan &r" + clan.getName());
 					} else {
-						lib.sendMessage(p, lib.clanUnknown(args2));
+						lib.sendMessage(p, lib.invalidClan(args2));
 					}
 				}
 				return true;
 			}
 			if (args0.equalsIgnoreCase("put")) {
 				if (Clan.ACTION.getId(args1).deploy() == null) {
-					lib.sendMessage(p, lib.playerUnknown(args1));
+					lib.sendMessage(p, lib.invalidPlayer(args1));
 					return true;
 				}
 				UUID target = Clan.ACTION.getId(args1).deploy();
@@ -744,7 +742,7 @@ public class CommandClanAdmin extends Command {
 								Clan target = ClansAPI.getInstance().getClanManager().getClan(id);
 								target.setValue("logo", new ArrayList<>(item.getItemMeta().getLore()), false);
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 
@@ -767,7 +765,7 @@ public class CommandClanAdmin extends Command {
 							Clan target = ClansAPI.getInstance().getClanManager().getClan(id);
 							lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas a power level of &5&l" + Clan.ACTION.format(target.getPower()));
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 						break;
@@ -776,7 +774,7 @@ public class CommandClanAdmin extends Command {
 							Clan target = ClansAPI.getInstance().getClanManager().getClan(id);
 							lib.sendMessage(p, "Clan: &5" + target.getName() + " &dpassword: &5&l" + target.getPassword());
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 						break;
@@ -789,7 +787,7 @@ public class CommandClanAdmin extends Command {
 							}
 							lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas a bank balance of &6&l" + Clan.ACTION.format(BanksAPI.getInstance().getBank(target).getBalanceDouble()));
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 						break;
@@ -798,7 +796,7 @@ public class CommandClanAdmin extends Command {
 							Clan target = ClansAPI.getInstance().getClanManager().getClan(id);
 							lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas a claim limit of &c&l" + Clan.ACTION.format(target.getClaimLimit()));
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 						break;
@@ -812,7 +810,7 @@ public class CommandClanAdmin extends Command {
 								lib.sendMessage(p, "&c&oAddon not installed.");
 							}
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 
@@ -828,7 +826,7 @@ public class CommandClanAdmin extends Command {
 								lib.sendMessage(p, "&c&oAddon not installed.");
 							}
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 
@@ -856,7 +854,7 @@ public class CommandClanAdmin extends Command {
 			String amountPre = args[3];
 			if (args0.equalsIgnoreCase("put")) {
 				if (Clan.ACTION.getId(args1).deploy() == null) {
-					lib.sendMessage(p, lib.playerUnknown(args1));
+					lib.sendMessage(p, lib.invalidPlayer(args1));
 					return true;
 				}
 				UUID target = Clan.ACTION.getId(args1).deploy();
@@ -909,7 +907,7 @@ public class CommandClanAdmin extends Command {
 								Clan target = ClansAPI.getInstance().getClanManager().getClan(id);
 								target.setValue("logo", new ArrayList<>(item.getItemMeta().getLore()), false);
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 
@@ -937,7 +935,7 @@ public class CommandClanAdmin extends Command {
 								target.broadcast("Our clan bank was just adjusted to: &a&o" + BanksAPI.getInstance().getBank(target).getBalanceDouble());
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dbank adjusted to &5&l" + amount);
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -959,7 +957,7 @@ public class CommandClanAdmin extends Command {
 								target.givePower(amount);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas been given &5&l" + amount + " &dpower.");
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -981,7 +979,7 @@ public class CommandClanAdmin extends Command {
 								target.broadcast("Our clan was just payed: &a&o" + amountPre);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas been paid &5&l" + amountPre + " &dand now has &6" + Clan.ACTION.format(BanksAPI.getInstance().getBank(target).getBalanceDouble()));
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -996,7 +994,7 @@ public class CommandClanAdmin extends Command {
 								target.giveClaims(amount);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas been given &5&l" + amount + " &dclaim(s).");
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -1023,7 +1021,7 @@ public class CommandClanAdmin extends Command {
 							target.setColor(args[3]);
 							lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas had their color changed to " + StringUtils.use(args[3] + "EXAMPLE").translate());
 						} else {
-							lib.sendMessage(p, lib.clanUnknown(args1));
+							lib.sendMessage(p, lib.invalidClan(args1));
 							return true;
 						}
 						break;
@@ -1041,7 +1039,7 @@ public class CommandClanAdmin extends Command {
 								target.takePower(amount);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas had &5&l" + amount + " &dpower taken.");
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -1059,7 +1057,7 @@ public class CommandClanAdmin extends Command {
 								target.broadcast("Our clan was just charged: &c&o" + amountPre);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas been charged &5&l" + amountPre + " &dand now has &6" + Clan.ACTION.format(BanksAPI.getInstance().getBank(target).getBalanceDouble()));
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {
@@ -1075,7 +1073,7 @@ public class CommandClanAdmin extends Command {
 								target.takeClaims(amount);
 								lib.sendMessage(p, "Clan: &5" + target.getName() + " &dhas had &5&l" + amount + " &d max claim(s) removed.");
 							} else {
-								lib.sendMessage(p, lib.clanUnknown(args1));
+								lib.sendMessage(p, lib.invalidClan(args1));
 								return true;
 							}
 						} catch (NumberFormatException ignored) {

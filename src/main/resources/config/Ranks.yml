@@ -29,6 +29,13 @@
 #  - MANAGE_DESCRIPTION     #
 #  - MANAGE_PERMS           #
 # # # # # # # # # # # # # # #
+#
+# bank=permissions:
+#  - VIEW_BANK_LOG
+#  - BANK_BALANCE
+#  - BANK_DEPOSIT
+#  - BANK_WITHDRAW
+#
 # NOTE: When renaming a rank, make sure you put an "old-name:" value with the old name next to it so the application has a way to smoothly transition players ranks automagically.
 #
 # An example can be found below:
@@ -50,6 +57,8 @@ NORMAL:
   inheritance: []
   permissions:
     - LAND_USE
+    - BANK_BALANCE
+    - BANK_DEPOSIT
     - LAND_USE_INTERACTABLE
     - LOGO_SHARE
 HIGH:
@@ -58,6 +67,7 @@ HIGH:
   inheritance:
     - 'Member'
   permissions:
+    - BANK_WITHDRAW
     - MANAGE_COLOR
     - LOGO_EDIT
     - LOGO_COLOR
@@ -72,6 +82,7 @@ HIGHER:
     - 'Member'
     - 'Moderator'
   permissions:
+    - VIEW_BANK_LOG
     - MANAGE_LAND
     - MANAGE_ALL_LAND
     - KICK_MEMBERS

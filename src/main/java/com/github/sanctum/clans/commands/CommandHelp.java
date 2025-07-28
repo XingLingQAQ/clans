@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class CommandHelp extends ClanSubCommand {
@@ -23,6 +25,9 @@ public class CommandHelp extends ClanSubCommand {
 	private List<String> helpMenu(String label) {
 		List<String> help = new ArrayList<>();
 		ClansAPI.getInstance().getCommandManager().getCommands().forEach(c -> {
+			if (c.getUsage() == null) {
+				Bukkit.getLogger().severe("command name is : " + c.getLabel());
+			}
 			if (c.getUsage().equals("&7|&f) &6{label}")) {
 				help.add(c.getUsage().replace("{label}", "{label} " + c.getLabel()));
 			} else help.add(c.getUsage());

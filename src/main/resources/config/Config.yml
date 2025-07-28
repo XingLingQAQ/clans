@@ -9,8 +9,9 @@
 Clans:
   # Allow plugin update checks?
   check-version: true
-  # A single timer runs the whole show! Decide how frequent-
-  # -the timer runs here!
+  # A single timer runs the whole show! Decide how frequent the timer runs here!
+  # A lot of the events in the plugin are controlled via a singular task timer that repeats every x threshold.
+  # Specify that threshold here to adjust how quick clans can react to certain things.
   timer:
     # Valid thresholds: [ MILLISECONDS, SECONDS, MINUTES, HOURS, DAYS ]
     threshold: MILLISECONDS
@@ -21,6 +22,24 @@ Clans:
 
   # Max amount of power a clan can have.
   max-power: 2000.0
+
+  # Add as many levels as you want! Define how challenging it is to level!
+  levels:
+    clan-leveled-up:
+      tell-everyone: true
+      broadcast-message: '&6{0} &awas leveled up to level &6{1}'
+      clan-message: '&6We just leveled up to level &a&l{1}'
+    tree:
+      '1':
+        range: '0-14'
+      '2':
+        range: '15-38'
+      '3':
+        range: '39-74'
+      '4':
+        range: '75-89'
+      '5':
+        range: '90-100'
 
   # Adjust teleportation time when a player is within range of another.
   # This is decided by who's in what clan, so if the players in range are allies or clan members you won't expect to wait to teleport.
@@ -304,8 +323,8 @@ Formatting:
     suffix: '&7]&r'
   # Set custom command aliases.
   # NOTE: REQUIRES a full server restart.
-  aliase:
-    - guild
+  # Uncomment to use. (Remove hashtag)
+  #alias: ["guild", "g"]
 
   # Change the formatting for different chat channels
   Chat:

@@ -131,7 +131,7 @@ public class ClaimFileBackend extends StringLibrary {
 					if (!event.isCancelled()) {
 						ClanVentBus.call(new AssociateLoseLandEvent(p, claim.getChunk()));
 						if (!Clearance.MANAGE_LAND.test(associate)) {
-							sendMessage(p, noClearance());
+							sendMessage(p, notEnoughClearance());
 							return false;
 						}
 						claim.remove();

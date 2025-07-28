@@ -8,7 +8,6 @@ import com.github.sanctum.labyrinth.task.BukkitTaskPredicate;
 import com.github.sanctum.labyrinth.task.TaskScheduler;
 import com.github.sanctum.panther.annotation.Note;
 import com.github.sanctum.panther.annotation.Ordinal;
-import com.github.sanctum.panther.annotation.Synchronized;
 import com.github.sanctum.panther.container.PantherCollection;
 import com.github.sanctum.panther.container.PantherSet;
 import com.github.sanctum.panther.util.Applicable;
@@ -71,7 +70,7 @@ public final class AsynchronousLoanableTask {
 	}
 
 	@Note("Meant to be used WITHIN your task logic")
-	public void synchronize(@Synchronized Applicable data) {
+	public void synchronize(Applicable data) {
 		TaskScheduler.of(data).schedule();
 	}
 

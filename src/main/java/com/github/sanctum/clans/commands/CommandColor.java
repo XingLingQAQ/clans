@@ -135,7 +135,7 @@ public class CommandColor extends ClanSubCommand {
 				}
 				clan.broadcast(args[0] + "Our color was changed.");
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 			}
 			return true;
 		}
@@ -251,7 +251,7 @@ public class CommandColor extends ClanSubCommand {
 					}
 				});
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 			}
 			return true;
 		}

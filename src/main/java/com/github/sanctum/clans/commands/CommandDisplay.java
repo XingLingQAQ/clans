@@ -52,7 +52,7 @@ public class CommandDisplay extends ClanSubCommand {
 				associate.getClan().setNickname(args[0]);
 				associate.getClan().broadcast("Our new nickname has been updated to '" + associate.getClan().getNickname() + "'");
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 			}
 			return true;
 		}
@@ -70,7 +70,7 @@ public class CommandDisplay extends ClanSubCommand {
 				associate.getClan().setNickname(args[0] + " " + args[1]);
 				associate.getClan().broadcast("Our new nickname has been updated to '" + associate.getClan().getNickname() + "'");
 			} else {
-				lib.sendMessage(p, lib.noClearance());
+				lib.sendMessage(p, lib.notEnoughClearance());
 			}
 			return true;
 		}

@@ -88,7 +88,7 @@ public final class ClanManager {
 	 */
 	public Clan getClan(UUID target) {
 		for (Clan c : getClans()) {
-			if (c.getMember(m -> m.getId().equals(target)) != null) {
+			if (c.getMember(target) != null) {
 				return c;
 			}
 		}
@@ -191,7 +191,7 @@ public final class ClanManager {
 		final FileList fileList = ClansAPI.getInstance().getFileList();
 		for (String clanID : Clan.ACTION.getAllClanIDs()) {
 			this.plugin.getLogger().info("  - Processing clan " + clanID);
-			if (fileList.get(clanID, "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).TYPE).read(c -> c.getNode("name").toPrimitive().isString())) {
+			if (fileList.get(clanID, "Clans", JavaPlugin.getPlugin(ClansJavaPlugin.class).DATATYPE).read(c -> c.getNode("name").toPrimitive().isString())) {
 				DefaultClan instance = new DefaultClan(registry, clanID);
 				this.plugin.getLogger().info("  - Successfully loaded [" + clanID + "] as " + '"' + instance.getName() + '"');
 				clans.add(instance);

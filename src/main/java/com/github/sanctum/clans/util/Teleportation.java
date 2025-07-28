@@ -9,15 +9,15 @@ public class Teleportation extends SimpleTeleport {
         super(entity, targetLocation);
         setRadiusFilter(new ClansTeleportationFilter(this));
         getRadiusFilterOptions().setDelay(ClansAPI.getDataInstance().getConfigInt("teleportation-time"));
-        getRadiusFilterOptions().setDelayMessage(ClansAPI.getDataInstance().getMessageResponse("teleporting"));
-        setTeleportedMessage(ClansAPI.getDataInstance().getMessageResponse("teleported"));
+        getRadiusFilterOptions().setDelayMessage(ClansAPI.getInstance().getPrefix().toString() + " " + ClansAPI.getDataInstance().getMessageResponse("teleporting"));
+        setTeleportedMessage(ClansAPI.getInstance().getPrefix().toString() + " " + ClansAPI.getDataInstance().getMessageResponse("teleported"));
     }
 
     public Teleportation(Location targetLocation, Identifiable... entities) {
         super(targetLocation, entities);
         setRadiusFilter(new ClansTeleportationFilter(this));
         getRadiusFilterOptions().setDelay(ClansAPI.getDataInstance().getConfigInt("teleportation-time"));
-        getRadiusFilterOptions().setDelayMessage(ClansAPI.getDataInstance().getMessageResponse("teleporting"));
-        setTeleportedMessage(ClansAPI.getDataInstance().getMessageResponse("teleported"));
+        getRadiusFilterOptions().setDelayMessage(ClansAPI.getInstance().getPrefix().toString() + " " + ClansAPI.getDataInstance().getMessageResponse("teleporting"));
+        setTeleportedMessage(ClansAPI.getInstance().getPrefix().toString() + " " + ClansAPI.getDataInstance().getMessageResponse("teleported"));
     }
 }

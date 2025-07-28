@@ -80,7 +80,7 @@ public class CommandLogo extends ClanSubCommand {
 			if (args[0].equalsIgnoreCase("edit")) {
 
 				if (!Clearance.LOGO_EDIT.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 
@@ -101,7 +101,7 @@ public class CommandLogo extends ClanSubCommand {
 
 			if (args[0].equalsIgnoreCase("upload")) {
 				if (!Clearance.LOGO_SHARE.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 				String id = new RandomID().generate();
@@ -148,7 +148,7 @@ public class CommandLogo extends ClanSubCommand {
 
 			if (args[0].equalsIgnoreCase("use")) {
 				if (!Clearance.LOGO_UPLOAD.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 
@@ -202,7 +202,7 @@ public class CommandLogo extends ClanSubCommand {
 
 			if (args[0].equalsIgnoreCase("apply")) {
 				if (!Clearance.LOGO_APPLY.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 
@@ -253,7 +253,7 @@ public class CommandLogo extends ClanSubCommand {
 
 			if (args[0].equalsIgnoreCase("print")) {
 				if (!Clearance.LOGO_PRINT.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 
@@ -299,7 +299,7 @@ public class CommandLogo extends ClanSubCommand {
 			if (args[0].equalsIgnoreCase("color")) {
 
 				if (!Clearance.LOGO_COLOR.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 
@@ -341,7 +341,7 @@ public class CommandLogo extends ClanSubCommand {
 
 			if (args[0].equalsIgnoreCase("redraw")) {
 				if (!Clearance.LOGO_EDIT.test(associate)) {
-					lib.sendMessage(p, lib.noClearance());
+					lib.sendMessage(p, lib.notEnoughClearance());
 					return true;
 				}
 

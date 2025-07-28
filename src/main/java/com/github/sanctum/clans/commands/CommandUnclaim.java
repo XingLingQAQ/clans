@@ -33,7 +33,7 @@ public class CommandUnclaim extends ClanSubCommand {
 					if (Clearance.MANAGE_LAND.test(associate)) {
 						Claim.ACTION.unclaim(p).run();
 					} else {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 					}
 				} else {
 					lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
@@ -56,7 +56,7 @@ public class CommandUnclaim extends ClanSubCommand {
 						if (Clearance.MANAGE_ALL_LAND.test(associate)) {
 							Claim.ACTION.unclaimAll(p).run();
 						} else {
-							lib.sendMessage(p, lib.noClearance());
+							lib.sendMessage(p, lib.notEnoughClearance());
 							return true;
 						}
 					} else {

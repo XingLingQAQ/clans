@@ -1,8 +1,8 @@
-package com.github.sanctum.clans.util;
+package com.github.sanctum.clans;
 
-import com.github.sanctum.clans.ClansJavaPlugin;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.clans.model.RankRegistry;
+import com.github.sanctum.clans.util.MessagePrefix;
 import com.github.sanctum.labyrinth.LabyrinthProvider;
 import com.github.sanctum.labyrinth.data.FileList;
 import com.github.sanctum.labyrinth.data.FileManager;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ReloadUtility {
+public class ReloadHandler {
 
 	public static void reload() {
 		final ClansAPI api = ClansAPI.getInstance();
@@ -29,7 +29,7 @@ public class ReloadUtility {
 		registry.order();
 		api.getClanManager().refresh();
 		api.getClaimManager().refresh();
-		printManager.getPrint(api.getLocalPrintKey()).reload().deploy();
+		printManager.getPrint(api.getConfigKey()).reload().deploy();
 	}
 
 	public static void reload(@NotNull Lang lang, @Nullable Player playerReloading) {
@@ -71,7 +71,7 @@ public class ReloadUtility {
 				((ClansJavaPlugin) api.getPlugin()).setPrefix(new MessagePrefix(main.getRoot().getString("Formatting.prefix.prefix"), main.getRoot().getString("Formatting.prefix.text"), main.getRoot().getString("Formatting.prefix.suffix")));
 				api.getClanManager().refresh();
 				api.getClaimManager().refresh();
-				printManager.getPrint(api.getLocalPrintKey()).reload().deploy();
+				printManager.getPrint(api.getConfigKey()).reload().deploy();
 				break;
 			case ES_ES:
 				if (type != null) {
@@ -96,7 +96,7 @@ public class ReloadUtility {
 				((ClansJavaPlugin) api.getPlugin()).setPrefix(new MessagePrefix(main2.getRoot().getString("Formatting.prefix.prefix"), main2.getRoot().getString("Formatting.prefix.text"), main2.getRoot().getString("Formatting.prefix.suffix")));
 				api.getClanManager().refresh();
 				api.getClaimManager().refresh();
-				printManager.getPrint(api.getLocalPrintKey()).reload().deploy();
+				printManager.getPrint(api.getConfigKey()).reload().deploy();
 				break;
 			case PT_BR:
 				if (type != null) {
@@ -122,7 +122,7 @@ public class ReloadUtility {
 				((ClansJavaPlugin) api.getPlugin()).setPrefix(new MessagePrefix(main3.getRoot().getString("Formatting.prefix.prefix"), main3.getRoot().getString("Formatting.prefix.text"), main3.getRoot().getString("Formatting.prefix.suffix")));
 				api.getClanManager().refresh();
 				api.getClaimManager().refresh();
-				printManager.getPrint(api.getLocalPrintKey()).reload().deploy();
+				printManager.getPrint(api.getConfigKey()).reload().deploy();
 				break;
 		}
 	}

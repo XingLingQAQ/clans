@@ -17,6 +17,7 @@ import com.github.sanctum.labyrinth.formatting.completion.SimpleTabCompletion;
 import com.github.sanctum.labyrinth.formatting.completion.TabCompletionIndex;
 import com.github.sanctum.labyrinth.formatting.component.OldComponent;
 import com.github.sanctum.labyrinth.formatting.string.ColoredString;
+import com.github.sanctum.labyrinth.gui.unity.simple.AnvilDocket;
 import com.github.sanctum.labyrinth.gui.unity.simple.MemoryDocket;
 import com.github.sanctum.labyrinth.interfacing.UnknownGeneric;
 import com.github.sanctum.labyrinth.library.TextLib;
@@ -47,6 +48,7 @@ public class CommandBank extends ClanSubCommand implements Message.Factory {
 				sendMessage(p, "&c&oNo economy interface found. Bank feature disabled.");
 				return true;
 			}
+
 			if (ClanBankPermissions.BANKS_USE.not(p)) {
 				sendMessage(p, Messages.PERM_NOT_PLAYER_COMMAND.toString());
 				return true;
@@ -265,7 +267,20 @@ public class CommandBank extends ClanSubCommand implements Message.Factory {
 								break;
 						}
 					} catch (NumberFormatException exception) {
-						sendMessage(p, Messages.BANK_INVALID_AMOUNT.toString());
+						AnvilDocket docket = null;
+						if (arg1.equalsIgnoreCase("deposit")) {
+							docket = new AnvilDocket(ClansAPI.getDataInstance().getMessages().getRoot().getNode("menu.home.bank.deposit"));
+						}
+						if (arg1.equalsIgnoreCase("withdraw")) {
+							docket = new AnvilDocket(ClansAPI.getDataInstance().getMessages().getRoot().getNode("menu.home.bank.withdraw"));
+						}
+						if (docket != null) {
+							docket.setUniqueDataConverter(associate, Clan.Associate.memoryDocketReplacer());
+							docket.load();
+							docket.toMenu().open(p);
+						} else {
+							sendMessage(p, Messages.BANK_INVALID_AMOUNT.toString());
+						}
 					}
 					return true;
 				default: // receive subcommand usage message
@@ -294,7 +309,7 @@ public class CommandBank extends ClanSubCommand implements Message.Factory {
 				ClanManager manager = ClansAPI.getInstance().getClanManager();
 				HUID id = manager.getClanID(args[1]);
 				if (id == null) {
-					sendMessage(p, lib.clanUnknown(args[1]));
+					sendMessage(p, lib.invalidClan(args[1]));
 					return true;
 				}
 				final Clan theOtherClan = manager.getClan(id);

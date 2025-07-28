@@ -10,10 +10,12 @@ import com.github.sanctum.labyrinth.data.service.PlayerSearch;
 import com.github.sanctum.labyrinth.formatting.completion.SimpleTabCompletion;
 import com.github.sanctum.labyrinth.formatting.completion.TabCompletionIndex;
 import com.github.sanctum.skulls.CustomHead;
-import com.github.sanctum.skulls.CustomHeadLoader;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
+
+import com.github.sanctum.skulls.SkullReferenceDocker;
+import com.github.sanctum.skulls.SkullReferenceUtility;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +55,7 @@ public class CommandHead extends ClanSubCommand {
 				return true;
 			}
 			if (args0.equalsIgnoreCase("buy")) {
-				ItemStack target = CustomHead.Manager.get(args[1]);
+				ItemStack target = SkullReferenceUtility.getItem(args[1]);
 				if (chargeToGet) {
 					if (target != null) {
 						if (EconomyProvision.getInstance().isValid()) {
@@ -83,7 +85,7 @@ public class CommandHead extends ClanSubCommand {
 			PlayerSearch search = PlayerSearch.of(args0);
 			if (search != null && search.isOnline()) {
 				Player foundYa = search.getPlayer().getPlayer();
-				CustomHead head = CustomHead.Manager.pick(args0);
+				CustomHead head = SkullReferenceUtility.getHead(args0);
 				// announce retrieval of head
 			}
 			return true;
@@ -99,25 +101,25 @@ public class CommandHead extends ClanSubCommand {
 						EconomyProvision provision = EconomyProvision.getInstance();
 						if (provision.has(cost, p).orElse(false)) {
 							if (provision.withdraw(cost, p).orElse(false)) {
-								CustomHead.Manager.load(new CustomHead() {
+								SkullReferenceUtility.load(new CustomHead() {
 									final ItemStack item;
 
 									{
-										item = CustomHeadLoader.provide(head);
+										item = SkullReferenceDocker.provide(head);
 									}
 
 									@Override
-									public @NotNull ItemStack get() {
+									public @NotNull ItemStack getItem() {
 										return item;
 									}
 
 									@Override
-									public @NotNull String name() {
+									public @NotNull String getName() {
 										return name;
 									}
 
 									@Override
-									public @NotNull String category() {
+									public @NotNull String getCategory() {
 										return "Clans";
 									}
 								});
@@ -128,25 +130,25 @@ public class CommandHead extends ClanSubCommand {
 						}
 					}
 				} else {
-					CustomHead.Manager.load(new CustomHead() {
+					SkullReferenceUtility.load(new CustomHead() {
 						final ItemStack item;
 
 						{
-							item = CustomHeadLoader.provide(head);
+							item = SkullReferenceDocker.provide(head);
 						}
 
 						@Override
-						public @NotNull ItemStack get() {
+						public @NotNull ItemStack getItem() {
 							return item;
 						}
 
 						@Override
-						public @NotNull String name() {
+						public @NotNull String getName() {
 							return name;
 						}
 
 						@Override
-						public @NotNull String category() {
+						public @NotNull String getCategory() {
 							return "Clans";
 						}
 					});

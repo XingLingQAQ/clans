@@ -10,13 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
+import com.github.sanctum.panther.annotation.Note;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@Note("You can remove comments once you've seen them, replace them with your own information. Its for devs :)")
 public class StringLibrary {
 
-	public static final StringLibrary LOCAL = new StringLibrary();
+	// Quick access fields/keys for fingerprint values
+	public static String CANNOT_JOIN_MULTIPLE_CLANS = "cannot-join-multiple-clans";
+	public static String NOT_IN_CLAN = "not-in-clan";
+	public static String NOT_ENOUGH_CLEARANCE = "not-enough-clearance";
+	public static String INVALID_CLAN = "invalid-clan";
+	public static String INVALID_PASSWORD = "invalid-password";
+	public static String INVALID_PASSWORD_FORMAT = "invalid-password-format";
+	public static String INVALID_PLAYER = "invalid-player";
 
 	public void sendMessage(Player p, String message) {
 		p.sendMessage(color(getPrefix() + " " + new FormattedString(message).translate(p).get()));
@@ -46,28 +56,32 @@ public class StringLibrary {
 		return prefix.toString();
 	}
 
-	public String alreadyInClan() {
-		return ClansAPI.getDataInstance().getMessageResponse("already-occupied");
+	public String cannotJointMultipleClans() {
+		return ClansAPI.getDataInstance().getMessageResponse("cannot-join-multiple-clans");
 	}
 
 	public String notInClan() {
-		return ClansAPI.getDataInstance().getMessageResponse("no-clan");
+		return ClansAPI.getDataInstance().getMessageResponse("not-in-clan");
 	}
 
-	public String noClearance() {
-		return ClansAPI.getDataInstance().getMessageResponse("no-clearance");
+	public String notEnoughClearance() {
+		return ClansAPI.getDataInstance().getMessageResponse("not-enough-clearance");
 	}
 
-	public String clanUnknown(String name) {
-		return MessageFormat.format(ClansAPI.getDataInstance().getMessageResponse("clan-unknown"), name);
+	public String invalidClan(String name) {
+		return MessageFormat.format(ClansAPI.getDataInstance().getMessageResponse("invalid-clan"), name);
 	}
 
-	public String passwordInvalid() {
-		return ClansAPI.getDataInstance().getMessageResponse("password-invalid");
+	public String invalidPassword() {
+		return ClansAPI.getDataInstance().getMessageResponse("invalid-password");
 	}
 
-	public String playerUnknown(String name) {
-		return MessageFormat.format(ClansAPI.getDataInstance().getMessageResponse("player-unknown"), name);
+	public String invalidPasswordFormat() {
+		return ClansAPI.getDataInstance().getMessageResponse("invalid-password-format");
+	}
+
+	public String invalidPlayer(String name) {
+		return MessageFormat.format(ClansAPI.getDataInstance().getMessageResponse("invalid-player"), name);
 	}
 
 	public String commandCreate() {
@@ -358,10 +372,6 @@ public class StringLibrary {
 
 	public String notClaimOwner(String actualOwner) {
 		return MessageFormat.format(ClansAPI.getDataInstance().getMessageResponse("not-owner"), actualOwner);
-	}
-
-	public String wrongPassword() {
-		return ClansAPI.getDataInstance().getMessageResponse("password-wrong");
 	}
 
 	public String getRankStyle() {

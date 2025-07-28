@@ -46,11 +46,11 @@ public class CommandEnemy extends ClanSubCommand {
 				if (associate != null) {
 					Clan c = associate.getClan();
 					if (!Clearance.MANAGE_RELATIONS.test(associate)) {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 						return true;
 					}
 					if (!Clan.ACTION.getAllClanNames().contains(args[1])) {
-						lib.sendMessage(p, lib.clanUnknown(args[1]));
+						lib.sendMessage(p, lib.invalidClan(args[1]));
 						return true;
 					}
 					Clan t = ClansAPI.getInstance().getClanManager().getClan(ClansAPI.getInstance().getClanManager().getClanID(args[1]));
@@ -109,11 +109,11 @@ public class CommandEnemy extends ClanSubCommand {
 				if (associate != null) {
 					Clan c = associate.getClan();
 					if (!Clearance.MANAGE_RELATIONS.test(associate)) {
-						lib.sendMessage(p, lib.noClearance());
+						lib.sendMessage(p, lib.notEnoughClearance());
 						return true;
 					}
 					if (!Clan.ACTION.getAllClanNames().contains(args[1])) {
-						lib.sendMessage(p, lib.clanUnknown(args[1]));
+						lib.sendMessage(p, lib.invalidClan(args[1]));
 						return true;
 					}
 					Clan t = ClansAPI.getInstance().getClanManager().getClan(ClansAPI.getInstance().getClanManager().getClanID(args[1]));

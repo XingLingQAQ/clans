@@ -70,6 +70,13 @@ public class ClanBankLog implements Serializable {
 
     final List<Transaction> transactions = new ArrayList<>();
 
+    public ClanBankLog() {
+    }
+
+    public ClanBankLog(@NotNull List<Transaction> list) {
+        this.transactions.addAll(list);
+    }
+
     public void addTransaction(BankTransactionEvent e) {
         transactions.add(new Transaction(unwrapNameable(e.getEntity()), e.getTransactionType(), e.getAmount()));
     }

@@ -5,6 +5,7 @@ import com.github.sanctum.clans.model.ClanSubCommand;
 import com.github.sanctum.clans.model.ClansAPI;
 import com.github.sanctum.clans.model.GUI;
 import com.github.sanctum.clans.util.StringLibrary;
+import com.github.sanctum.labyrinth.api.LegacyCheckService;
 import com.github.sanctum.labyrinth.formatting.completion.SimpleTabCompletion;
 import com.github.sanctum.labyrinth.formatting.completion.TabCompletionIndex;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.bukkit.persistence.PersistentDataType;
 public class CommandReservoir extends ClanSubCommand {
 	public CommandReservoir() {
 		super("reservoir");
+		setInvisible(LegacyCheckService.VERSION.contains("1_8")); // disable unless 1.9+
 	}
 
 	@Override
